@@ -1,4 +1,6 @@
-dist/
-build/
+*.class
+*.jar
+nbproject/private/private.properties
+dist/README.TXT
+build/built-jar.properties
 build.xml
-/nbproject/private/
