@@ -5,6 +5,8 @@
 package Server;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import shared.Showing;
@@ -31,8 +33,21 @@ public class Server {
         UrgentMsgThread urgent = new UrgentMsgThread(server);
         urgent.start();
         
+        ServerSocket s = null;
+        try{
+        s = new ServerSocket(2000);}
+        catch(IOException e){
+            System.err.println(e.getMessage());
+            System.exit(0);
+        }
+        
         System.out.println("Running");
         while(!server.quitting()){
+            Socket cl = null;
+            try{
+            cl = s.accept();}
+            catch (IOException e){ continue; }
+            server.addClient(cl);
             
         }
         System.out.println("Quit");
