@@ -7,14 +7,14 @@ package Server;
 import java.io.File;
 import java.net.Socket;
 import java.util.List;
-import shared.Booking;
+import shared.Showing;
 
 /**
  *
  * @author Robert
  */
 public class Server {
-    private List<Booking> _reservations;
+    private List<Showing> _showings;
     private List<Session> _clients;
     private boolean _quit;
     private boolean _forcequit;
