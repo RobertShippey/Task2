@@ -35,4 +35,16 @@ class Session extends Thread{
         
         server.removeClient(this);
     }
+    
+    public boolean isConnected(){
+        return _ip.isConnected();
+
+    }
+    
+    public void forceQuit(){
+        try{
+        _ip.close();}
+        catch (IOException e){ }
+        _ip = null;
+    }
 }

@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Iterator;
 import java.util.List;
 import shared.Showing;
 
@@ -53,6 +54,11 @@ public class Server {
 
 
         }
+        if(server.forceQuitting()){
+            server.closeAllClients();
+        } else {
+        server.waitOnClients(); }
+        
         System.out.println("Quit");
         System.exit(0);
     }
@@ -113,6 +119,31 @@ public class Server {
         if (q.equals("f")) {
             _quit = true;
             _forcequit = true;
+        }
+    }
+    public boolean forceQuitting(){
+        return _forcequit;
+    }
+    
+    public void waitOnClients(){
+        boolean loop = true;
+        while(loop){
+            Iterator<Session> it = _clients.iterator();
+            boolean done = true;
+            while(it.hasNext()){
+                if(it.next().isConnected()){
+                    done=false;
+                }
+                
+            }
+            if(done){ loop=false; }
+        }
+    }
+    
+    public void closeAllClients(){
+        Iterator<Session> it = _clients.iterator();
+        while(it.hasNext()){
+            it.next().forceQuit();
         }
     }
 }
