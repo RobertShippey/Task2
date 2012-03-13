@@ -31,9 +31,32 @@ class Session extends Thread{
     
     @Override
     synchronized public void run(){
+        try {
+            _name = (String)in.readObject();
+        } catch (IOException ex) {
+            //could not connect through socket anymore
+        } catch (ClassNotFoundException ex) {
+            //Didn't send a String of their username to start
+        }
+        
+        while(!server.quitting()){
+            try{
+            Object something = in.readObject();
+            //processing
+            
+            //if the client logs off
+            //server.removeClient(this); //then return I guess...
+            
+            out.writeObject(something);
+            } catch (IOException e) {
+                //could not connect though socket anymore
+            } catch (ClassNotFoundException cnf) {
+                //client sent something weird
+            }
+        }
         
         
-        server.removeClient(this);
+        
     }
     
     public boolean isConnected(){

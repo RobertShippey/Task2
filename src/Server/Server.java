@@ -59,6 +59,8 @@ public class Server {
         } else {
         server.waitOnClients(); }
         
+        server.writeFile(data);
+        
         System.out.println("Quit");
         System.exit(0);
     }
@@ -100,7 +102,7 @@ public class Server {
      * 
      * @return 
      */
-    private boolean quitting() {
+    public boolean quitting() {
         if (_quit) {
             return true;
         }
