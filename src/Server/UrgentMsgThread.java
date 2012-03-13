@@ -19,7 +19,7 @@ class UrgentMsgThread extends Thread {
     }
     
     @Override
-    public void run(){
+    synchronized public void run(){
         
     }
     
