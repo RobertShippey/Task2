@@ -5,5 +5,4 @@ dist/README.TXT
 build/built-jar.properties
 build.xml
 /build/
-/dist/
 /nbproject/private/

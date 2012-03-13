@@ -70,17 +70,29 @@ public class Server {
         //write data to f
     }
     
+    /***
+     * Constructs Session and adds to linked list then starts Thread.
+     * 
+     * @param s Received from clients request to connect.
+     */
     public void addClient(Socket s){
         Session c = new Session(s);
         _clients.add(c);
         c.start();
     }
-
+    /***
+     * 
+     * @return 
+     */
     private boolean quitting() {
         if(_quit){ return true;}
        return false;
     }
-    
+    /***
+     * 
+     * @param q 
+     * @return 
+     */
     public void setQuit(String q)
     {
         if(q.equals("q")){
