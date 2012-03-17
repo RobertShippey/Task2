@@ -10,7 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import shared.Booking;
 import shared.Showing;
 
@@ -156,7 +155,7 @@ public class Server {
         LinkedList<Booking> r = new LinkedList<Booking>();
         Iterator<Showing> itt = _showings.iterator();
         while(itt.hasNext()){
-            Booking[] b = itt.next().getBookings(name);
+            r.addAll(itt.next().getBookings(name));
         }
         
         return r;

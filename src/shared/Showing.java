@@ -4,13 +4,16 @@
  */
 package shared;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedList;
 
 /**
  *
  * @author Robert
  */
-public class Showing {
+public class Showing implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Booking[] seats;
     private int capacity;
     private int booked;
@@ -38,9 +41,17 @@ public class Showing {
         
     }
     
-    public Booking[] getBookings(String name){
-        Booking[] b = new Booking[10];
-        //find all bookings with this name and add them to the array;
+    public LinkedList<Booking> getBookings(String name){
+        LinkedList<Booking> b = new LinkedList<Booking>();
+        for(int x=0;x<seats.length;x++){
+            if(name.equals(seats[x].getName())){
+                b.add(seats[x]);
+            }
+            
+        }
+        if(b.isEmpty()){
+            return null;
+        }
         
         return b;
     }

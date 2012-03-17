@@ -4,11 +4,14 @@
  */
 package shared;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Robert
  */
-public class Booking {
+public class Booking implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String _customerName;
     private String _film;
     
