@@ -10,8 +10,17 @@ package shared;
  */
 public class Booking {
     private String _customerName;
+    private String _film;
     
     public Booking(){ }
-    public Booking(String name) {_customerName = name;}
+    public Booking(String film) {_film = film;}
+    
+    public void setName(String name){
+        _customerName = name;
+    }
+    
+    public String getName(){
+        return _customerName;
+    }
     
 }

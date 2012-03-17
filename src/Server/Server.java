@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import shared.Booking;
 import shared.Showing;
 
 /**
@@ -18,8 +20,8 @@ import shared.Showing;
  */
 public class Server {
 
-    private List<Showing> _showings;
-    private List<Session> _clients;
+    private LinkedList<Showing> _showings;
+    private LinkedList<Session> _clients;
     private boolean _quit;
     private boolean _forcequit;
 
@@ -68,6 +70,7 @@ public class Server {
     public Server() {
         _quit = false;
         _forcequit = false;
+        _showings = new LinkedList<Showing>(); 
     }
 
     public void readFile(File f) {
@@ -147,5 +150,15 @@ public class Server {
         while(it.hasNext()){
             it.next().forceQuit();
         }
+    }
+    
+    public LinkedList<Booking> findBookings(String name){
+        LinkedList<Booking> r = new LinkedList<Booking>();
+        Iterator<Showing> itt = _showings.iterator();
+        while(itt.hasNext()){
+            Booking[] b = itt.next().getBookings(name);
+        }
+        
+        return r;
     }
 }

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
+import shared.Booking;
 
 /**
  *
@@ -20,6 +22,7 @@ class Session extends Thread{
     private Socket _ip;
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    private List<Booking> reservations;
     
     public Session (Socket ip, Server s) throws IOException{
         server = s;
@@ -69,5 +72,9 @@ class Session extends Thread{
         _ip.close();}
         catch (IOException e){ }
         _ip = null;
+    }
+    
+    private void getCustomersReservations(){
+        reservations = server.findBookings(_name);
     }
 }

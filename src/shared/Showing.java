@@ -22,16 +22,26 @@ public class Showing {
         this.date = date;
         this.name = name;
         this.seats = new Booking[capacity];
+        for(int x=0;x<seats.length;x++){
+            seats[x] = new Booking (name);
+        }
     }
     
     public void addBooking(String name, int count){
         
         for(int x=0; x<count;x++){
-            seats[booked++] = new Booking(name);
+            seats[booked++].setName(name);
         }
     }
     
     public void removeBooking(String name){
         
+    }
+    
+    public Booking[] getBookings(String name){
+        Booking[] b = new Booking[10];
+        //find all bookings with this name and add them to the array;
+        
+        return b;
     }
 }
