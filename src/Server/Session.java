@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.List;
+import java.util.LinkedList;
 import shared.Booking;
 
 /**
@@ -22,7 +22,7 @@ class Session extends Thread {
     private Socket _ip;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private List<Booking> reservations;
+    private LinkedList<Booking> reservations;
 
     public Session(Socket ip, Server s) throws IOException {
         server = s;

@@ -18,12 +18,12 @@ public class Showing implements Serializable {
     private int capacity;
     private int booked;
     private Date date;
-    private String name;
+    private String filmName;
     
     public Showing(int capacity, Date date, String name){
         this.capacity = capacity;
         this.date = date;
-        this.name = name;
+        this.filmName = name;
         this.seats = new Booking[capacity];
         for(int x=0;x<seats.length;x++){
             seats[x] = new Booking (name);
@@ -32,12 +32,18 @@ public class Showing implements Serializable {
     
     public void addBooking(String name, int count){
         
-        for(int x=0; x<count;x++){
+        for(int x=0; x<count && booked<=capacity;x++){
             seats[booked++].setName(name);
         }
     }
     
     public void removeBooking(String name){
+        for(int x=0;x<seats.length;x++){
+            if(name.equalsIgnoreCase(seats[x].getName())){
+                seats[x] = null;
+                booked--;
+            }
+        }
         
     }
     
