@@ -5,6 +5,8 @@
 package Server;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -55,13 +57,14 @@ public class Server {
 
 
         }
-        if(server.forceQuitting()){
+        if (server.forceQuitting()) {
             server.closeAllClients();
         } else {
-        server.waitOnClients(); }
-        
+            server.waitOnClients();
+        }
+
         server.writeFile(data);
-        
+
         System.out.println("Quit");
         System.exit(0);
     }
@@ -69,19 +72,46 @@ public class Server {
     public Server() {
         _quit = false;
         _forcequit = false;
-        _showings = new LinkedList<Showing>(); 
+        _showings = new LinkedList<Showing>();
     }
 
     public void readFile(File f) {
-        //loop
-        //get data for booking
-        //construct booking
-        //_reservations.add();
+        if (f.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream(f);
+                byte[] t = new byte[fis.available()];
+                fis.read(t);
+                String text = new String(t);
+                String[] records = text.split("\n");
+                for (int x = 0; x < records.length; x++) {
+                    String[] row = records[x].split(",");
+                    Booking b = new Booking(row[0]);
+                    //stuff
+                    b.setName(row[4]);
+                   // _showings.find(row[0]).add(b);
+                }
+
+            } catch (IOException ioe) {
+            }
+        } else {
+            try {
+                FileOutputStream fos = new FileOutputStream(f);
+                fos.write(" ".getBytes());
+                fos.flush();
+                fos.close();
+            } catch (IOException ioe) {
+            }
+
+        }
     }
 
     public void writeFile(File f) {
-        //loop over _reservations
-        //write data to f
+        try {
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write("some string".getBytes());
+        } catch (IOException ioe) {
+        }
+
     }
 
     /***
@@ -94,10 +124,10 @@ public class Server {
         _clients.add(c);
         c.start();
     }
-    
-    public void removeClient(Session c){
-        boolean r =  _clients.remove(c);
-         
+
+    public void removeClient(Session c) {
+        boolean r = _clients.remove(c);
+
     }
 
     /***
@@ -125,39 +155,42 @@ public class Server {
             _forcequit = true;
         }
     }
-    public boolean forceQuitting(){
+
+    public boolean forceQuitting() {
         return _forcequit;
     }
-    
-    public void waitOnClients(){
+
+    public void waitOnClients() {
         boolean loop = true;
-        while(loop){
+        while (loop) {
             Iterator<Session> it = _clients.iterator();
             boolean done = true;
-            while(it.hasNext()){
-                if(it.next().isConnected()){
-                    done=false;
+            while (it.hasNext()) {
+                if (it.next().isConnected()) {
+                    done = false;
                 }
-                
+
             }
-            if(done){ loop=false; }
+            if (done) {
+                loop = false;
+            }
         }
     }
-    
-    public void closeAllClients(){
+
+    public void closeAllClients() {
         Iterator<Session> it = _clients.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             it.next().forceQuit();
         }
     }
-    
-    public LinkedList<Booking> findBookings(String name){
+
+    public LinkedList<Booking> findBookings(String name) {
         LinkedList<Booking> r = new LinkedList<Booking>();
         Iterator<Showing> itt = _showings.iterator();
-        while(itt.hasNext()){
+        while (itt.hasNext()) {
             r.addAll(itt.next().getBookings(name));
         }
-        
+
         return r;
     }
 }

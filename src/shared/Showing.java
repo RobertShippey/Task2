@@ -37,6 +37,10 @@ public class Showing implements Serializable {
         }
     }
     
+    public void add (Booking b){
+        ///todo
+    }
+        
     public void removeBooking(String name){
         for(int x=0;x<seats.length;x++){
             if(name.equalsIgnoreCase(seats[x].getName())){
