@@ -18,6 +18,7 @@ import shared.Booking;
 class Session extends Thread {
 
     private Server server;
+    private Data data;
     private String _name;
     private Socket _ip;
     private ObjectInputStream in;
@@ -26,6 +27,7 @@ class Session extends Thread {
 
     public Session(Socket ip, Server s) throws IOException {
         server = s;
+        data = server.getData();
         _ip = ip;
         in = new ObjectInputStream(_ip.getInputStream());
         out = new ObjectOutputStream(_ip.getOutputStream());
@@ -81,9 +83,5 @@ class Session extends Thread {
         } catch (IOException e) {
         }
         _ip = null;
-    }
-
-    private void getCustomersReservations() {
-        reservations = server.findBookings(_name);
     }
 }

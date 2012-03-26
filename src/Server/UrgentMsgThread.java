@@ -12,10 +12,12 @@ import java.util.List;
  */
 class UrgentMsgThread extends Thread {
     private Server _s;
+    private Data data;
     private List<String> _msgs;
 
     public UrgentMsgThread(Server server) {
         _s = server;
+        data = _s.getData();
     }
     
     @Override

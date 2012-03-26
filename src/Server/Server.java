@@ -12,8 +12,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
-import shared.Booking;
-import shared.Showing;
 
 /**
  *
@@ -21,15 +19,17 @@ import shared.Showing;
  */
 public class Server {
 
-    private LinkedList<Showing> _showings;
+    //private LinkedList<Showing> _showings;
+    private Data data;
     private LinkedList<Session> _clients;
     private boolean _quit;
     private boolean _forcequit;
 
     public static void main(String[] args) {
         Server server = new Server();
-        File data = new File("data.txt");
-        server.readFile(data);
+        File films = new File("films.txt");
+        File reservations = new File("reservations.txt");
+        server.readFile(films, reservations);
 
         CmdThread cmd = new CmdThread(server);
         cmd.start();
@@ -63,7 +63,7 @@ public class Server {
             server.waitOnClients();
         }
 
-        server.writeFile(data);
+        server.writeFile(films, reservations);
 
         System.out.println("Quit");
         System.exit(0);
@@ -72,11 +72,11 @@ public class Server {
     public Server() {
         _quit = false;
         _forcequit = false;
-        _showings = new LinkedList<Showing>();
+        data = null;
     }
 
-    public void readFile(File f) {
-        if (f.exists()) {
+    public void readFile(File f, File r) {
+       /* if (f.exists()) {
             try {
                 FileInputStream fis = new FileInputStream(f);
                 byte[] t = new byte[fis.available()];
@@ -102,10 +102,10 @@ public class Server {
             } catch (IOException ioe) {
             }
 
-        }
+        } */
     }
 
-    public void writeFile(File f) {
+    public void writeFile(File f, File r) {
         try {
             FileOutputStream fos = new FileOutputStream(f);
             fos.write("some string".getBytes());
@@ -180,14 +180,9 @@ public class Server {
             it.next().forceQuit();
         }
     }
-
-    public LinkedList<Booking> findBookings(String name) {
-        LinkedList<Booking> r = new LinkedList<Booking>();
-        Iterator<Showing> itt = _showings.iterator();
-        while (itt.hasNext()) {
-            r.addAll(itt.next().getBookings(name));
-        }
-
-        return r;
+    
+    public Data getData(){
+        return this.data;
     }
+
 }
