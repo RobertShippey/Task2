@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Date;
@@ -30,7 +31,7 @@ public class Server {
 
     public static void main(String[] args) {
         Server server = new Server();
-        File films = new File("films.txt");
+        File films = new File("films.ser");
         File reservations = new File("reservations.txt");
         server.readFile(films, reservations);
 
@@ -78,29 +79,42 @@ public class Server {
         data = null;
     }
 
-    public void readFile(File f, File r) throws Exception { //remember to take throws out
+    public void readFile(File f, File r) {
         LinkedList<Booking> bll = new LinkedList<Booking>();
         LinkedList<Film> fll = new LinkedList<Film>();
-        //read films first
-        
-        if (f.exists()) {
-            FileInputStream fis = new FileInputStream(f);
-            byte[] t = new byte[fis.available()];
-            fis.read(t);
-            String text = new String(t);
-            String[] records = text.split("\n");
-            for (int x = 0; x < records.length; x++) {
-                String[] row = records[x].split(",");
-                Booking b = new Booking(row[4], data.findFilm(row[0], Date.valueOf(row[1])), Integer.parseInt(row[3]));
-                bll.add(b);
+        try {
+            if (f.exists()) {
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+                while (true) {
+                    try {
+                        fll.add((Film) ois.readObject());
+                    } catch (Exception e) {
+                        break;
+                    }
+                }
+                ois.close();
+            } else {
+                f.createNewFile();
             }
-            fis.close();
-        } else {
-            FileOutputStream fos = new FileOutputStream(f);
-            fos.write(" ".getBytes());
-            fos.flush();
-            fos.close();
+
+            if (r.exists()) {
+                FileInputStream fis = new FileInputStream(r);
+                byte[] t = new byte[fis.available()];
+                fis.read(t);
+                String text = new String(t);
+                String[] records = text.split("\n");
+                for (int x = 0; x < records.length; x++) {
+                    String[] row = records[x].split(",");
+                    Booking b = new Booking(row[4], data.findFilm(row[0], Date.valueOf(row[1])), Integer.parseInt(row[3]));
+                    bll.add(b);
+                }
+                fis.close();
+            } else {
+                r.createNewFile();
+            }
+        } catch (IOException ioe) {
         }
+        data = new Data(fll, bll);
     }
 
     public void writeFile(File f, File r) {
