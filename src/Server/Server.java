@@ -10,8 +10,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import shared.Booking;
+import shared.Film;
 
 /**
  *
@@ -75,34 +78,29 @@ public class Server {
         data = null;
     }
 
-    public void readFile(File f, File r) {
-       /* if (f.exists()) {
-            try {
-                FileInputStream fis = new FileInputStream(f);
-                byte[] t = new byte[fis.available()];
-                fis.read(t);
-                String text = new String(t);
-                String[] records = text.split("\n");
-                for (int x = 0; x < records.length; x++) {
-                    String[] row = records[x].split(",");
-                    Booking b = new Booking(row[0]);
-                    //stuff
-                    b.setName(row[4]);
-                   // _showings.find(row[0]).add(b);
-                }
-
-            } catch (IOException ioe) {
+    public void readFile(File f, File r) throws Exception { //remember to take throws out
+        LinkedList<Booking> bll = new LinkedList<Booking>();
+        LinkedList<Film> fll = new LinkedList<Film>();
+        //read films first
+        
+        if (f.exists()) {
+            FileInputStream fis = new FileInputStream(f);
+            byte[] t = new byte[fis.available()];
+            fis.read(t);
+            String text = new String(t);
+            String[] records = text.split("\n");
+            for (int x = 0; x < records.length; x++) {
+                String[] row = records[x].split(",");
+                Booking b = new Booking(row[4], data.findFilm(row[0], Date.valueOf(row[1])), Integer.parseInt(row[3]));
+                bll.add(b);
             }
+            fis.close();
         } else {
-            try {
-                FileOutputStream fos = new FileOutputStream(f);
-                fos.write(" ".getBytes());
-                fos.flush();
-                fos.close();
-            } catch (IOException ioe) {
-            }
-
-        } */
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(" ".getBytes());
+            fos.flush();
+            fos.close();
+        }
     }
 
     public void writeFile(File f, File r) {

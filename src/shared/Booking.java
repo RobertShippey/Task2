@@ -16,17 +16,12 @@ public class Booking implements Serializable {
     private Film _film;
     private int number;
     
-    public Booking(){ }
     public Booking(String name, Film film, int no) {
         this._customerName = name;
         this._film = film;
         this.number = no;
     }
-    
-    public void setName(String name){
-        this._customerName = name;
-    }
-    
+        
     public String getName(){
         return _customerName;
     }
@@ -35,4 +30,7 @@ public class Booking implements Serializable {
         return this._film;
     }
     
+    public int getNumber(){
+        return this.number;
+    }
 }
