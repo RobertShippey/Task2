@@ -126,6 +126,7 @@ public class Server {
     }
 
     public void removeClient(Session c) {
+        c.forceQuit();
         boolean r = _clients.remove(c);
 
     }
@@ -164,15 +165,11 @@ public class Server {
         boolean loop = true;
         while (loop) {
             Iterator<Session> it = _clients.iterator();
-            boolean done = true;
+            loop = false;
             while (it.hasNext()) {
                 if (it.next().isConnected()) {
-                    done = false;
+                    loop = true;
                 }
-
-            }
-            if (done) {
-                loop = false;
             }
         }
     }
