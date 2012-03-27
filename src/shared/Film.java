@@ -14,18 +14,18 @@ import java.util.Date;
 public class Film implements Serializable{
     private static final long serialVersionUID = 1L;
     private String name;
-    private Date time;
+    private String time;
     private int capacity;
     private int booked;
     
-    public Film(String name, Date time, int capacity){
+    public Film(String name, String time, int capacity){
         this.name = name;
         this.time = time;
         this.capacity = capacity;
         this.booked = 0;
     }
     
-    public Film(String name, Date time, int capacity, int booked){
+    public Film(String name, String time, int capacity, int booked){
         this.name = name;
         this.time = time;
         this.capacity = capacity;
@@ -36,7 +36,7 @@ public class Film implements Serializable{
         return this.name;
     }
     
-    public Date getDate(){
+    public String getDate(){
         return this.time;
     }
     

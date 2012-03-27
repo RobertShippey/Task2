@@ -4,7 +4,6 @@
  */
 package Server;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import shared.Booking;
@@ -35,7 +34,7 @@ public class Data {
         
     }
     
-    public Film findFilm(String name, Date time){
+    public Film findFilm(String name, String time){
         Iterator<Film> fit = films.iterator();
         while (fit.hasNext()) {
             if (fit.next().getName().equals(name) && fit.next().getDate().equals(time)) {
@@ -45,7 +44,7 @@ public class Data {
         return null;
     }
     
-    public boolean makeReservation(String customer, String film, Date time, int no) {
+    public boolean makeReservation(String customer, String film, String time, int no) {
         Film f = findFilm(film, time);
         if (f == null) {
             return false;
@@ -60,7 +59,7 @@ public class Data {
         return false;
     }
     
-    public void cancelReservation(String customer, String film, Date time, int no){
+    public void cancelReservation(String customer, String film, String time, int no){
         Film f = findFilm(film, time);
         Booking[] b = getReservations(customer);
         for(int x=0; x<b.length;x++){
@@ -73,12 +72,12 @@ public class Data {
         
     }
     
-    public boolean changeReservation(String customer, String film, Date time, int oldSeats, int newSeats){
+    public boolean changeReservation(String customer, String film, String time, int oldSeats, int newSeats){
         this.cancelReservation(customer, film, time, oldSeats);
         return this.makeReservation(customer, film, time, newSeats);
     }
     
-    public boolean isFull(String film, Date time){
+    public boolean isFull(String film, String time){
         Film f = findFilm(film,time);
         if(f.space()==0){
             return true;
@@ -86,7 +85,7 @@ public class Data {
         
     }
     
-    public int getSpace(String film, Date time){
+    public int getSpace(String film, String time){
         Film f = findFilm(film, time);
         return f.space();
     }

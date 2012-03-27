@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import shared.Booking;
@@ -105,7 +105,7 @@ public class Server {
                 String[] records = text.split("\n");
                 for (int x = 0; x < records.length; x++) {
                     String[] row = records[x].split(",");
-                    Booking b = new Booking(row[4], data.findFilm(row[0], Date.valueOf(row[1])), Integer.parseInt(row[3]));
+                    Booking b = new Booking(row[4], data.findFilm(row[0], row[1]), Integer.parseInt(row[3]));
                     bll.add(b);
                 }
                 fis.close();
