@@ -8,12 +8,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import shared.Booking;
-import shared.Showing;
+import shared.Film;
 
 /**
  *
@@ -21,15 +23,17 @@ import shared.Showing;
  */
 public class Server {
 
-    private LinkedList<Showing> _showings;
+    //private LinkedList<Showing> _showings;
+    private Data data;
     private LinkedList<Session> _clients;
     private boolean _quit;
     private boolean _forcequit;
 
     public static void main(String[] args) {
         Server server = new Server();
-        File data = new File("data.txt");
-        server.readFile(data);
+        File films = new File("films.ser");
+        File reservations = new File("reservations.txt");
+        server.readFile(films, reservations);
 
         CmdThread cmd = new CmdThread(server);
         cmd.start();
@@ -63,7 +67,7 @@ public class Server {
             server.waitOnClients();
         }
 
-        server.writeFile(data);
+        server.writeFile(films, reservations);
 
         System.out.println("Quit");
         System.exit(0);
@@ -72,40 +76,48 @@ public class Server {
     public Server() {
         _quit = false;
         _forcequit = false;
-        _showings = new LinkedList<Showing>();
+        data = null;
     }
 
-    public void readFile(File f) {
-        if (f.exists()) {
-            try {
-                FileInputStream fis = new FileInputStream(f);
+    public void readFile(File f, File r) {
+        LinkedList<Booking> bll = new LinkedList<Booking>();
+        LinkedList<Film> fll = new LinkedList<Film>();
+        try {
+            if (f.exists()) {
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+                while (true) {
+                    try {
+                        fll.add((Film) ois.readObject());
+                    } catch (Exception e) {
+                        break;
+                    }
+                }
+                ois.close();
+            } else {
+                f.createNewFile();
+            }
+
+            if (r.exists()) {
+                FileInputStream fis = new FileInputStream(r);
                 byte[] t = new byte[fis.available()];
                 fis.read(t);
                 String text = new String(t);
                 String[] records = text.split("\n");
                 for (int x = 0; x < records.length; x++) {
                     String[] row = records[x].split(",");
-                    Booking b = new Booking(row[0]);
-                    //stuff
-                    b.setName(row[4]);
-                   // _showings.find(row[0]).add(b);
+                    Booking b = new Booking(row[4], data.findFilm(row[0], Date.valueOf(row[1])), Integer.parseInt(row[3]));
+                    bll.add(b);
                 }
-
-            } catch (IOException ioe) {
+                fis.close();
+            } else {
+                r.createNewFile();
             }
-        } else {
-            try {
-                FileOutputStream fos = new FileOutputStream(f);
-                fos.write(" ".getBytes());
-                fos.flush();
-                fos.close();
-            } catch (IOException ioe) {
-            }
-
+        } catch (IOException ioe) {
         }
+        data = new Data(fll, bll);
     }
 
-    public void writeFile(File f) {
+    public void writeFile(File f, File r) {
         try {
             FileOutputStream fos = new FileOutputStream(f);
             fos.write("some string".getBytes());
@@ -180,14 +192,9 @@ public class Server {
             it.next().forceQuit();
         }
     }
-
-    public LinkedList<Booking> findBookings(String name) {
-        LinkedList<Booking> r = new LinkedList<Booking>();
-        Iterator<Showing> itt = _showings.iterator();
-        while (itt.hasNext()) {
-            r.addAll(itt.next().getBookings(name));
-        }
-
-        return r;
+    
+    public Data getData(){
+        return this.data;
     }
+
 }

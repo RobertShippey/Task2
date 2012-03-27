@@ -4,7 +4,7 @@
  */
 package Server;
 
-import java.util.List;
+import java.util.LinkedList;
 
 /**
  *
@@ -12,10 +12,13 @@ import java.util.List;
  */
 class UrgentMsgThread extends Thread {
     private Server _s;
-    private List<String> _msgs;
+    private Data data;
+    private LinkedList<String> _msgs;
 
     public UrgentMsgThread(Server server) {
         _s = server;
+        data = _s.getData();
+        _msgs = new LinkedList<String>();
     }
     
     @Override
