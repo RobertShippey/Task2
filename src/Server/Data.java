@@ -73,6 +73,11 @@ public class Data {
         
     }
     
+    public boolean changeReservation(String customer, String film, Date time, int oldSeats, int newSeats){
+        this.cancelReservation(customer, film, time, oldSeats);
+        return this.makeReservation(customer, film, time, newSeats);
+    }
+    
     public boolean isFull(String film, Date time){
         Film f = findFilm(film,time);
         if(f.space()==0){
