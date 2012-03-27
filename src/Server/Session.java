@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.LinkedList;
 import shared.Booking;
 
@@ -38,6 +39,12 @@ class Session extends Thread {
     synchronized public void run() {
         try {
             _name = (String) in.readObject();
+            if(server.addUser(_name)){
+                out.writeObject(null);
+            } else {
+                reservations.addAll(Arrays.asList(data.getReservations(_name)));
+                out.writeObject(reservations.toArray());
+            }
         } catch (IOException ex) {
             //could not connect through socket anymore
         } catch (ClassNotFoundException ex) {

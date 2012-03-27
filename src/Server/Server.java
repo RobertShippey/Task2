@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import shared.Booking;
@@ -28,12 +28,14 @@ public class Server {
     private LinkedList<Session> _clients;
     private boolean _quit;
     private boolean _forcequit;
+    private LinkedList<String> users;
 
     public static void main(String[] args) {
         Server server = new Server();
         File films = new File("films.ser");
         File reservations = new File("reservations.txt");
-        server.readFile(films, reservations);
+        File users = new File("users.txt");
+        server.readFile(films, reservations, users);
 
         CmdThread cmd = new CmdThread(server);
         cmd.start();
@@ -67,7 +69,7 @@ public class Server {
             server.waitOnClients();
         }
 
-        server.writeFile(films, reservations);
+        server.writeFile(films, reservations, users);
 
         System.out.println("Quit");
         System.exit(0);
@@ -79,10 +81,22 @@ public class Server {
         data = null;
     }
 
-    public void readFile(File f, File r) {
+    public void readFile(File f, File r, File u) {
         LinkedList<Booking> bll = new LinkedList<Booking>();
         LinkedList<Film> fll = new LinkedList<Film>();
+        LinkedList<String> ull = new LinkedList<String>();
         try {
+
+            if (u.exists()) {
+                FileInputStream uf = new FileInputStream(u);
+                byte[] us = new byte[uf.available()];
+                uf.read(us);
+                ull.addAll(Arrays.asList(new String(us).split("\n")));
+                uf.close();
+            } else {
+                u.createNewFile();
+            }
+
             if (f.exists()) {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 while (true) {
@@ -115,9 +129,10 @@ public class Server {
         } catch (IOException ioe) {
         }
         data = new Data(fll, bll);
+        users = ull;
     }
 
-    public void writeFile(File f, File r) {
+    public void writeFile(File f, File r, File u) {
         try {
             FileOutputStream fos = new FileOutputStream(f);
             fos.write("some string".getBytes());
@@ -197,4 +212,13 @@ public class Server {
         return this.data;
     }
 
+    public boolean addUser(String user){
+        if(users.contains(user)){
+            return false;
+        } else {
+            users.add(user);
+            return true;
+        }
+    
+    }
 }
