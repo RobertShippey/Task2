@@ -40,6 +40,7 @@ class Session extends Thread {
     @Override
     synchronized public void run() {
         try {
+            _ip.setSoTimeout(1);
             _name = (String) in.readObject();
             if(server.addUser(_name)){
                 out.writeObject(null);

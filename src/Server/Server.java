@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import shared.Booking;
 import shared.Film;
 
@@ -25,16 +26,16 @@ public class Server {
 
     //private LinkedList<Showing> _showings;
     private Data data;
-    private LinkedList<Session> _clients;
+    private List<Session> _clients;
     private boolean _quit;
     private boolean _forcequit;
-    private LinkedList<String> users;
+    private List<String> users;
 
     public static void main(String[] args) {
         Server server = new Server();
-        File films = new File("films.ser");
-        File reservations = new File("reservations.txt");
-        File users = new File("users.txt");
+        File films = new File("data/films.csv");
+        File reservations = new File("data/reservations.csv");
+        File users = new File("data/users.csv");
         server.readFile(films, reservations, users);
         
         CmdThread cmd = new CmdThread(server);
@@ -46,6 +47,7 @@ public class Server {
         ServerSocket s = null;
         try {
             s = new ServerSocket(2000);
+            s.setSoTimeout(1);
         } catch (IOException e) {
             System.err.println(e.getMessage());
             System.exit(0);
@@ -76,8 +78,8 @@ public class Server {
     }
 
     public Server() {
-        _clients = (LinkedList<Session>) Collections.synchronizedList(new LinkedList<Session>());
-        users = (LinkedList<String>) Collections.synchronizedList(new LinkedList<String>());
+        _clients = Collections.synchronizedList(new LinkedList<Session>());
+        users = Collections.synchronizedList(new LinkedList<String>());
         _quit = false;
         _forcequit = false;
         data = null;
@@ -105,11 +107,12 @@ public class Server {
                 ff.read(fileBytes);
                 String films = new String(fileBytes);
                 String[] film = films.split("\n");
+                if(!film[0].equals("")){
                 for (int x = 0; x < film.length; x++) {
                     String[] items = film[x].split(",");
                     Film flm = new Film(items[0],items[1],Integer.parseInt(items[2]),Integer.parseInt(items[3]));
                     fll.add(flm);
-                }
+                }}
                 ff.close();
             } else {
                 f.createNewFile();
@@ -121,11 +124,12 @@ public class Server {
                 fis.read(t);
                 String text = new String(t);
                 String[] records = text.split("\n");
+                if(!records[0].equals("")){
                 for (int x = 0; x < records.length; x++) {
                     String[] row = records[x].split(",");
                     Booking b = new Booking(row[4], data.findFilm(row[0], row[1]), Integer.parseInt(row[3]));
                     bll.add(b);
-                }
+                }}
                 fis.close();
             } else {
                 r.createNewFile();
@@ -198,7 +202,7 @@ public class Server {
      * 
      * @return 
      */
-    public boolean quitting() {
+    public synchronized boolean  quitting() {
         if (_quit) {
             return true;
         }
@@ -210,7 +214,7 @@ public class Server {
      * @param q 
      * @return 
      */
-    public void setQuit(String q) {
+    public synchronized void setQuit(String q) {
         if (q.equals("q")) {
             _quit = true;
         }

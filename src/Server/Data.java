@@ -7,6 +7,7 @@ package Server;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import shared.Booking;
 import shared.Film;
 
@@ -16,12 +17,12 @@ import shared.Film;
  */
 public class Data {
 
-    private LinkedList<Film> films;
-    private LinkedList<Booking> reservations;
+    private List<Film> films;
+    private List<Booking> reservations;
 
     public Data(LinkedList<Film> films, LinkedList<Booking> reservations) {
-        this.films = (LinkedList<Film>) Collections.synchronizedList(films);
-        this.reservations = (LinkedList<Booking>) Collections.synchronizedList(reservations);
+        this.films = Collections.synchronizedList(films);
+        this.reservations = Collections.synchronizedList(reservations);
     }
 
     public Booking[] getReservations(String customerName) {
