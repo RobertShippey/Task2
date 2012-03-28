@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
@@ -140,7 +139,7 @@ public class Server {
             Iterator<Film> fit = data.getFilmItt();
             while(fit.hasNext()){
                 Film f = fit.next();
-                String film = new String(f.getName() + "," + f.getDate() + "," + f.getCapacity() + "," + f.getBooked() + "\n");
+                String film = f.getName() + "," + f.getDate() + "," + f.getCapacity() + "," + f.getBooked() + "\n";
                 fos.write(film.getBytes());
             }
             fos.close();
@@ -149,7 +148,7 @@ public class Server {
             Iterator<Booking> bit = data.getBookingItt();
             while(bit.hasNext()){
                 Booking b = bit.next();
-                String res = new String(b.getName() + "," + b.getFilm().getName() + "," + b.getSeats() + "," + "\n");
+                String res = b.getName() + "," + b.getFilm().getName() + "," + b.getSeats() + "," + "\n";
                 fos.write(res.getBytes());
             }
             fos.close();
@@ -158,7 +157,7 @@ public class Server {
             Iterator<String> uit = users.iterator();
             while(uit.hasNext()){
                 String u = uit.next();
-                String name = new String(u + "\n");
+                String name = u + "\n";
                 fos.write(name.getBytes());
             }
             fos.close();
