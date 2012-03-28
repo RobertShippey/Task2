@@ -62,7 +62,7 @@ class Session extends Thread {
                 
                 //processing
                 
-                if(command.equals("LOGOFF")){
+                if(command.equals(Request.LOG_OFF)){
                     server.removeClient(this);
                     return;
                 }
