@@ -148,7 +148,9 @@ public class Server {
      */
     public void addClient(Socket s) throws IOException {
         Session c = new Session(s, this);
-        _clients.add(c);
+       if(!_clients.add(c)){
+           throw new IOException("Could not add client to list.");
+       }
         c.start();
     }
 
