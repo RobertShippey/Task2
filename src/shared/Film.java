@@ -5,7 +5,6 @@
 package shared;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  *
@@ -38,6 +37,14 @@ public class Film implements Serializable{
     
     public String getDate(){
         return this.time;
+    }
+    
+    public int getCapacity(){
+        return this.capacity;
+    }
+    
+    public int getBooked(){
+        return this.booked;
     }
     
     public int space(){

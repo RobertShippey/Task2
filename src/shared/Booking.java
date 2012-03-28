@@ -14,12 +14,12 @@ public class Booking implements Serializable {
     private static final long serialVersionUID = 1L;
     private String _customerName;
     private Film _film;
-    private int number;
+    private int seats;
     
     public Booking(String name, Film film, int no) {
         this._customerName = name;
         this._film = film;
-        this.number = no;
+        this.seats = no;
     }
         
     public String getName(){
@@ -30,7 +30,7 @@ public class Booking implements Serializable {
         return this._film;
     }
     
-    public int getNumber(){
-        return this.number;
+    public int getSeats(){
+        return this.seats;
     }
 }

@@ -134,10 +134,35 @@ public class Server {
         users = ull;
     }
 
-    public void writeFile(File f, File r, File u) {
+    public void writeFile(File ff, File rf, File uf) {
         try {
-            FileOutputStream fos = new FileOutputStream(f);
-            fos.write("some string".getBytes());
+            FileOutputStream fos = new FileOutputStream(ff);
+            Iterator<Film> fit = data.getFilmItt();
+            while(fit.hasNext()){
+                Film f = fit.next();
+                String film = new String(f.getName() + "," + f.getDate() + "," + f.getCapacity() + "," + f.getBooked() + "\n");
+                fos.write(film.getBytes());
+            }
+            fos.close();
+            
+            fos = new FileOutputStream(rf);
+            Iterator<Booking> bit = data.getBookingItt();
+            while(bit.hasNext()){
+                Booking b = bit.next();
+                String res = new String(b.getName() + "," + b.getFilm().getName() + "," + b.getSeats() + "," + "\n");
+                fos.write(res.getBytes());
+            }
+            fos.close();
+            
+            fos = new FileOutputStream(uf);
+            Iterator<String> uit = users.iterator();
+            while(uit.hasNext()){
+                String u = uit.next();
+                String name = new String(u + "\n");
+                fos.write(name.getBytes());
+            }
+            fos.close();
+            
         } catch (IOException ioe) {
         }
 

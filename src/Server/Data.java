@@ -90,4 +90,12 @@ public class Data {
         return f.space();
     }
     
+    public Iterator<Film> getFilmItt(){
+        return films.iterator();
+    }
+    
+    public Iterator<Booking> getBookingItt(){
+        return reservations.iterator();
+    }
+    
 }
