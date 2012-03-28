@@ -11,6 +11,8 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.LinkedList;
 import shared.Booking;
+import shared.Request;
+import shared.Response;
 
 /**
  *
@@ -53,21 +55,19 @@ class Session extends Thread {
 
         while (!server.quitting()) {
             try {
-                Object something = in.readObject();
+                Request req = (Request)in.readObject();
 
-
+                String command = req.getRequest();
+                Response r = new Response();
+                
                 //processing
-
-                if (something instanceof String) {
-                    String command = (String)something;
-                    if(command.equalsIgnoreCase("log off"))
-                    {
-                        server.removeClient(this);
-                        return;
-                    }
+                
+                if(command.equals("LOGOFF")){
+                    server.removeClient(this);
+                    return;
                 }
-
-                out.writeObject(something);
+                
+                out.writeObject(r);
             } catch (IOException e) {
                 //could not connect though socket anymore
             } catch (ClassNotFoundException cnf) {
