@@ -4,6 +4,7 @@
  */
 package Server;
 
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -18,7 +19,7 @@ class UrgentMsgThread extends Thread {
     public UrgentMsgThread(Server server) {
         _s = server;
         data = _s.getData();
-        _msgs = new LinkedList<String>();
+        _msgs = (LinkedList<String>) Collections.synchronizedList(new LinkedList<String>());
     }
     
     @Override
@@ -27,8 +28,9 @@ class UrgentMsgThread extends Thread {
     }
     
     public void send(String msg){
+        synchronized(_msgs){
         _msgs.add(msg);
-    }
+    }}
     
     
 }
