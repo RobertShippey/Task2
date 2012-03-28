@@ -98,15 +98,17 @@ public class Server {
             }
 
             if (f.exists()) {
-                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-                while (true) {
-                    try {
-                        fll.add((Film) ois.readObject());
-                    } catch (Exception e) {
-                        break;
-                    }
+                FileInputStream ff = new FileInputStream(f);
+                byte[] fileBytes = new byte[ff.available()];
+                ff.read(fileBytes);
+                String films = new String(fileBytes);
+                String[] film = films.split("\n");
+                for (int x = 0; x < film.length; x++) {
+                    String[] items = film[x].split(",");
+                    Film flm = new Film(items[0],items[1],Integer.parseInt(items[2]),Integer.parseInt(items[3]));
+                    fll.add(flm);
                 }
-                ois.close();
+                ff.close();
             } else {
                 f.createNewFile();
             }
