@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import shared.Booking;
@@ -35,7 +36,7 @@ public class Server {
         File reservations = new File("reservations.txt");
         File users = new File("users.txt");
         server.readFile(films, reservations, users);
-
+        
         CmdThread cmd = new CmdThread(server);
         cmd.start();
 
@@ -75,6 +76,8 @@ public class Server {
     }
 
     public Server() {
+        _clients = (LinkedList<Session>) Collections.synchronizedList(new LinkedList<Session>());
+        users = (LinkedList<String>) Collections.synchronizedList(new LinkedList<String>());
         _quit = false;
         _forcequit = false;
         data = null;
@@ -154,11 +157,13 @@ public class Server {
             fos.close();
             
             fos = new FileOutputStream(uf);
-            Iterator<String> uit = users.iterator();
-            while(uit.hasNext()){
-                String u = uit.next();
-                String name = u + "\n";
-                fos.write(name.getBytes());
+            synchronized (users) {
+                Iterator<String> uit = users.iterator();
+                while (uit.hasNext()) {
+                    String u = uit.next();
+                    String name = u + "\n";
+                    fos.write(name.getBytes());
+                }
             }
             fos.close();
             
@@ -173,17 +178,20 @@ public class Server {
      * @param s Received from clients request to connect.
      */
     public void addClient(Socket s) throws IOException {
-        Session c = new Session(s, this);
-       if(!_clients.add(c)){
-           throw new IOException("Could not add client to list.");
-       }
-        c.start();
+        synchronized (_clients) {
+            Session c = new Session(s, this);
+            if (!_clients.add(c)) {
+                throw new IOException("Could not add client to list.");
+            }
+            c.start();
+        }
     }
 
     public void removeClient(Session c) {
+        synchronized(_clients){
         c.forceQuit();
         boolean r = _clients.remove(c);
-
+        }
     }
 
     /***
@@ -217,22 +225,26 @@ public class Server {
     }
 
     public void waitOnClients() {
-        boolean loop = true;
-        while (loop) {
-            Iterator<Session> it = _clients.iterator();
-            loop = false;
-            while (it.hasNext()) {
-                if (it.next().isConnected()) {
-                    loop = true;
+        synchronized (_clients) {
+            boolean loop = true;
+            while (loop) {
+                Iterator<Session> it = _clients.iterator();
+                loop = false;
+                while (it.hasNext()) {
+                    if (it.next().isConnected()) {
+                        loop = true;
+                    }
                 }
             }
         }
     }
 
     public void closeAllClients() {
-        Iterator<Session> it = _clients.iterator();
-        while (it.hasNext()) {
-            it.next().forceQuit();
+        synchronized (_clients) {
+            Iterator<Session> it = _clients.iterator();
+            while (it.hasNext()) {
+                it.next().forceQuit();
+            }
         }
     }
     
@@ -240,13 +252,14 @@ public class Server {
         return this.data;
     }
 
-    public boolean addUser(String user){
-        if(users.contains(user)){
-            return false;
-        } else {
-            users.add(user);
-            return true;
+    public boolean addUser(String user) {
+        synchronized (users) {
+            if (users.contains(user)) {
+                return false;
+            } else {
+                users.add(user);
+                return true;
+            }
         }
-    
     }
 }
