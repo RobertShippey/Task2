@@ -33,9 +33,9 @@ public class Server {
 
     public static void main(String[] args) {
         Server server = new Server();
-        File films = new File("data/films.csv");
-        File reservations = new File("data/reservations.csv");
-        File users = new File("data/users.csv");
+        File films = new File("data/films.txt");
+        File reservations = new File("data/reservations.txt");
+        File users = new File("data/users.txt");
         server.readFile(films, reservations, users);
         
         CmdThread cmd = new CmdThread(server);
@@ -90,7 +90,10 @@ public class Server {
         LinkedList<Film> fll = new LinkedList<Film>();
         LinkedList<String> ull = new LinkedList<String>();
         try {
-
+            if(!u.getParentFile().exists()){
+                u.getParentFile().mkdir();
+            }
+            
             if (u.exists()) {
                 FileInputStream uf = new FileInputStream(u);
                 byte[] us = new byte[uf.available()];
@@ -107,12 +110,13 @@ public class Server {
                 ff.read(fileBytes);
                 String films = new String(fileBytes);
                 String[] film = films.split("\n");
-                if(!film[0].equals("")){
-                for (int x = 0; x < film.length; x++) {
-                    String[] items = film[x].split(",");
-                    Film flm = new Film(items[0],items[1],Integer.parseInt(items[2]),Integer.parseInt(items[3]));
-                    fll.add(flm);
-                }}
+                if (!film[0].equals("")) {
+                    for (int x = 0; x < film.length; x++) {
+                        String[] items = film[x].split(",");
+                        Film flm = new Film(items[0], items[1], Integer.parseInt(items[2]), Integer.parseInt(items[3]));
+                        fll.add(flm);
+                    }
+                }
                 ff.close();
             } else {
                 f.createNewFile();
@@ -135,6 +139,7 @@ public class Server {
                 r.createNewFile();
             }
         } catch (IOException ioe) {
+            System.err.println(ioe.getMessage());
         }
         data = new Data(fll, bll);
         users = ull;
