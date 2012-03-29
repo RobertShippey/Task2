@@ -23,7 +23,8 @@ import shared.Film;
  * @author Robert
  */
 public class Server {
-
+    
+    public static final int TIMEOUT = 10;
     //private LinkedList<Showing> _showings;
     private Data data;
     private List<Session> _clients;
@@ -49,7 +50,7 @@ public class Server {
         ServerSocket s = null;
         try {
             s = new ServerSocket(2000);
-            s.setSoTimeout(1);
+            s.setSoTimeout(Server.TIMEOUT);
         } catch (IOException e) {
             System.err.println(e.getMessage());
             System.exit(0);
@@ -119,6 +120,8 @@ public class Server {
                         String[] items = film[x].split(",");
                         fl[x] = new Film(items[0], items[1], Integer.parseInt(items[2]), Integer.parseInt(items[3]));
                     }
+                } else {
+                    fl = null;
                 }
                 ff.close();
             } else {
@@ -159,7 +162,11 @@ public class Server {
     public void writeFile(File ff, File rf, File uf) {
         try {
             FileOutputStream fos = new FileOutputStream(ff);
-            fos.write(data.allFilmsToString().getBytes());
+            String fs = data.allFilmsToString();
+            if(fs!=null){
+                byte[] fb = fs.getBytes();
+                fos.write(fb);
+            }
             fos.close();
             
             fos = new FileOutputStream(rf);

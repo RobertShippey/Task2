@@ -106,13 +106,16 @@ public class Data {
         }
     }
     
-    public String allFilmsToString() {
-        synchronized (films) {
-            String r = "";
+    public synchronized String allFilmsToString() {
+        String r = new String("");
+        if (films != null) {
             for (int x = 0; x < films.length; x++) {
                 r += films[x].toString() + "\n";
             }
             return r;
+        } else {
+            return null;
         }
+
     }
 }
