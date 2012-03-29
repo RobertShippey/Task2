@@ -64,4 +64,9 @@ public class Film implements Serializable{
         this.booked += c;
     }
     
+    @Override
+    public String toString(){
+        return this.name + "," + this.time + "," + this.capacity + "," + this.booked;
+    }
+    
 }

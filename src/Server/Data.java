@@ -17,11 +17,11 @@ import shared.Film;
  */
 public class Data {
 
-    private List<Film> films;
+    private Film[] films;
     private List<Booking> reservations;
 
-    public Data(LinkedList<Film> films, LinkedList<Booking> reservations) {
-        this.films = Collections.synchronizedList(films);
+    public Data(Film[] films, LinkedList<Booking> reservations) {
+        this.films = films;
         this.reservations = Collections.synchronizedList(reservations);
     }
 
@@ -40,10 +40,9 @@ public class Data {
 
     public Film findFilm(String name, String time) {
         synchronized (films) {
-            Iterator<Film> fit = films.iterator();
-            while (fit.hasNext()) {
-                if (fit.next().getName().equals(name) && fit.next().getDate().equals(time)) {
-                    return fit.next();
+            for(int x=0;x<films.length;x++){
+                if (films[x].getName().equals(name) && films[x].getDate().equals(time)) {
+                    return films[x];
                 }
             }
         }
@@ -101,15 +100,19 @@ public class Data {
         return f.space();
     }
 
-    public Iterator<Film> getFilmItt() {
-        synchronized (films) {
-            return films.iterator();
-        }
-    }
-
     public Iterator<Booking> getBookingItt() {
         synchronized (reservations) {
             return reservations.iterator();
+        }
+    }
+    
+    public String allFilmsToString() {
+        synchronized (films) {
+            String r = "";
+            for (int x = 0; x < films.length; x++) {
+                r += films[x].toString() + "\n";
+            }
+            return r;
         }
     }
 }

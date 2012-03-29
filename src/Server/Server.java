@@ -87,8 +87,8 @@ public class Server {
 
     public void readFile(File f, File r, File u) {
         LinkedList<Booking> bll = new LinkedList<Booking>();
-        LinkedList<Film> fll = new LinkedList<Film>();
         LinkedList<String> ull = new LinkedList<String>();
+        Film[] fl = null;
         try {
             if(!u.getParentFile().exists()){
                 u.getParentFile().mkdir();
@@ -110,11 +110,11 @@ public class Server {
                 ff.read(fileBytes);
                 String films = new String(fileBytes);
                 String[] film = films.split("\n");
+                fl = new Film[film.length];
                 if (!film[0].equals("")) {
                     for (int x = 0; x < film.length; x++) {
                         String[] items = film[x].split(",");
-                        Film flm = new Film(items[0], items[1], Integer.parseInt(items[2]), Integer.parseInt(items[3]));
-                        fll.add(flm);
+                        fl[x] = new Film(items[0], items[1], Integer.parseInt(items[2]), Integer.parseInt(items[3]));
                     }
                 }
                 ff.close();
@@ -141,19 +141,14 @@ public class Server {
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
         }
-        data = new Data(fll, bll);
+        data = new Data(fl, bll);
         users = ull;
     }
 
     public void writeFile(File ff, File rf, File uf) {
         try {
             FileOutputStream fos = new FileOutputStream(ff);
-            Iterator<Film> fit = data.getFilmItt();
-            while(fit.hasNext()){
-                Film f = fit.next();
-                String film = f.getName() + "," + f.getDate() + "," + f.getCapacity() + "," + f.getBooked() + "\n";
-                fos.write(film.getBytes());
-            }
+            fos.write(data.allFilmsToString().getBytes());
             fos.close();
             
             fos = new FileOutputStream(rf);
