@@ -30,13 +30,15 @@ public class Server {
     private boolean _quit;
     private boolean _forcequit;
     private List<String> users;
+    private String[] offers;
 
     public static void main(String[] args) {
         Server server = new Server();
         File films = new File("data/films.txt");
         File reservations = new File("data/reservations.txt");
         File users = new File("data/users.txt");
-        server.readFile(films, reservations, users);
+        File offers = new File("data/special_offers.csv");
+        server.readFile(films, reservations, users, offers);
         
         CmdThread cmd = new CmdThread(server);
         cmd.start();
@@ -83,9 +85,10 @@ public class Server {
         _quit = false;
         _forcequit = false;
         data = null;
+        offers = null;
     }
 
-    public void readFile(File f, File r, File u) {
+    public void readFile(File f, File r, File u, File s) {
         LinkedList<Booking> bll = new LinkedList<Booking>();
         LinkedList<String> ull = new LinkedList<String>();
         Film[] fl = null;
@@ -138,11 +141,19 @@ public class Server {
             } else {
                 r.createNewFile();
             }
+            
+            if(s.exists()){
+                FileInputStream of = new FileInputStream(s);
+                byte[] o = new byte[of.available()];
+                of.read(o);
+                String[] offers = new String(o).split("\n");
+            }
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
         }
         data = new Data(fl, bll);
         users = ull;
+        this.offers = offers;
     }
 
     public void writeFile(File ff, File rf, File uf) {
@@ -265,5 +276,9 @@ public class Server {
                 return true;
             }
         }
+    }
+    
+    public String[] getOffers(){
+        return this.offers;
     }
 }
