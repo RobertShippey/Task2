@@ -10,9 +10,10 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
-public class ClientGUI extends JFrame {
+public class Menu extends JFrame {
+    private static final long serialVersionUID = 1L;
 
-   public ClientGUI() {
+   public Menu() {
         
       super("Client GUI");
       JTabbedPane tabbedGUI = new JTabbedPane();
@@ -45,7 +46,8 @@ public class ClientGUI extends JFrame {
       
  
         
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         setSize(400, 200);
     }
 }

@@ -6,3 +6,4 @@ build/built-jar.properties
 build.xml
 /build/
 /nbproject/private/
+/dist/
