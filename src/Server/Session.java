@@ -32,22 +32,29 @@ class Session extends Thread {
         server = s;
         data = server.getData();
         _ip = ip;
-        in = new ObjectInputStream(_ip.getInputStream());
         out = new ObjectOutputStream(_ip.getOutputStream());
-
+        in = new ObjectInputStream(_ip.getInputStream());
+        
     }
 
     @Override
     synchronized public void run() {
         try {
-            _ip.setSoTimeout(Server.TIMEOUT);
+            _ip.setSoTimeout(Server.TIMEOUT_BLOCK);
             _name = (String) in.readObject();
-            if(server.addUser(_name)){
+            System.out.println(_name);
+            if (server.addUser(_name)) {
                 out.writeObject(null);
             } else {
-                reservations.addAll(Arrays.asList(data.getReservations(_name)));
-                out.writeObject(reservations.toArray());
+                Booking[] b = data.getReservations(_name);
+                if (b != null) {
+                    reservations.addAll(Arrays.asList(b));
+                    out.writeObject(reservations.toArray());
+                } else {
+                    out.writeObject(null);
+                }
             }
+            _ip.setSoTimeout(Server.TIMEOUT);
         } catch (IOException ex) {
             //could not connect through socket anymore
         } catch (ClassNotFoundException ex) {
@@ -59,6 +66,7 @@ class Session extends Thread {
                 Request req = (Request)in.readObject();
 
                 String command = req.getRequest();
+                System.out.println(command);
                 Response r = new Response();
                 
                 //processing

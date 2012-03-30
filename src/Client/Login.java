@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,8 +29,11 @@ public class Login extends JFrame implements ActionListener, KeyListener {
     private JPanel panel;
     private JLabel usernameLabel;
     private JTextField usernameText;
+    private final Comms server;
 
-    public Login() {
+    public Login()throws IOException {
+        server = new Comms("localhost");
+        
         usernameLabel = new JLabel();
         usernameLabel.setText("Username:");
         usernameText = new JTextField(15);
@@ -54,13 +58,15 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        String value1 = usernameText.getText();
-
-        Menu page = new Menu();
+        String name = usernameText.getText();
+        server.logon(name);
+        
+        Menu page = new Menu(server);
         this.setVisible(false);
         page.setVisible(true);
-
-        // code to be added for submitting string to server
+        this.dispose();
+        
+        
 
 
     }

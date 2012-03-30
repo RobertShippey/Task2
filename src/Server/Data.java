@@ -34,7 +34,11 @@ public class Data {
                     r.add(it.next());
                 }
             }
-            return (Booking[]) r.toArray();
+            if (r.size() > 0) {
+                return (Booking[]) r.toArray();
+            }
+            return null;
+
         }
     }
 

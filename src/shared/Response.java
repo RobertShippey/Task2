@@ -4,11 +4,14 @@
  */
 package shared;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Robert
  */
-public class Response {
+public class Response implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String response;
     private Object object;
     

@@ -25,6 +25,7 @@ import shared.Film;
 public class Server {
     
     public static final int TIMEOUT = 10;
+    public static final int TIMEOUT_BLOCK = 0;
     //private LinkedList<Showing> _showings;
     private Data data;
     private List<Session> _clients;
@@ -93,6 +94,7 @@ public class Server {
         LinkedList<Booking> bll = new LinkedList<Booking>();
         LinkedList<String> ull = new LinkedList<String>();
         Film[] fl = null;
+        String[] ofrs = null;
         try {
             if(!u.getParentFile().exists()){
                 u.getParentFile().mkdir();
@@ -149,14 +151,14 @@ public class Server {
                 FileInputStream of = new FileInputStream(s);
                 byte[] o = new byte[of.available()];
                 of.read(o);
-                String[] offers = new String(o).split("\n");
+                ofrs = new String(o).split("\n");
             }
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
         }
         data = new Data(fl, bll);
         users = ull;
-        this.offers = offers;
+        this.offers = ofrs;
     }
 
     public void writeFile(File ff, File rf, File uf) {
