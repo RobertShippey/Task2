@@ -73,6 +73,7 @@ class Session extends Thread {
                 
                 if(command.equals(Request.LOG_OFF)){
                     server.removeClient(this);
+                    System.out.println("Removed");
                     return;
                 }
                 
@@ -97,7 +98,7 @@ class Session extends Thread {
         try {
             _ip.close();
         } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
-        _ip = null;
     }
 }

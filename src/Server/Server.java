@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -62,11 +63,14 @@ public class Server {
             Socket cl = null;
             try {
                 cl = s.accept();
-                server.addClient(cl);
             } catch (IOException e) {
                 continue;
             }
-
+            try{
+             server.addClient(cl);
+            } catch (IOException e) {
+                continue;
+            }
 
         }
         if (server.forceQuitting()) {
@@ -212,9 +216,9 @@ public class Server {
     }
 
     public void removeClient(Session c) {
-        synchronized(_clients){
-        c.forceQuit();
-        boolean r = _clients.remove(c);
+        synchronized (_clients) {
+            c.forceQuit();
+            boolean r = _clients.remove(c);
         }
     }
 

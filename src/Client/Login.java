@@ -14,6 +14,7 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
@@ -29,11 +30,10 @@ public class Login extends JFrame implements ActionListener, KeyListener {
     private JPanel panel;
     private JLabel usernameLabel;
     private JTextField usernameText;
-    private final Comms server;
+    private Comms server;
 
-    public Login()throws IOException {
-        server = new Comms("localhost");
-        
+    public Login() {
+       
         usernameLabel = new JLabel();
         usernameLabel.setText("Username:");
         usernameText = new JTextField(15);
@@ -58,6 +58,11 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent ae) {
+        try{
+        server = new Comms("localhost");
+        } catch (IOException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
         String name = usernameText.getText();
         server.logon(name);
         
@@ -65,10 +70,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
         this.setVisible(false);
         page.setVisible(true);
         this.dispose();
-        
-        
-
-
+      
     }
 
     @Override
