@@ -4,8 +4,6 @@
  */
 package Client;
 
-import javax.swing.JOptionPane;
-
 public class Client {
 
     public static void main(String arg[]) {

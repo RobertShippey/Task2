@@ -66,6 +66,9 @@ public class Login extends JFrame implements ActionListener, KeyListener {
         String name = usernameText.getText();
         server.logon(name);
         
+        Urgent u = new Urgent(server);
+        u.start();
+        
         Menu page = new Menu(server);
         this.setVisible(false);
         page.setVisible(true);
