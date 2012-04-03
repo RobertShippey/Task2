@@ -43,11 +43,12 @@ public class Server {
         File offers = new File("data/special_offers.csv");
         server.readFile(films, reservations, users, offers);
         
-        CmdThread cmd = new CmdThread(server);
-        cmd.start();
-
+        
         UrgentMsgThread urgent = new UrgentMsgThread(server);
         urgent.start();
+        
+        CmdThread cmd = new CmdThread(server, urgent);
+        cmd.start();
 
         ServerSocket s = null;
         try {
@@ -82,7 +83,6 @@ public class Server {
         server.writeFile(films, reservations, users);
 
         System.out.println("Quit");
-        System.exit(0);
     }
 
     public Server() {
@@ -215,11 +215,10 @@ public class Server {
         }
     }
 
-    public void removeClient(Session c) {
-        synchronized (_clients) {
-            c.forceQuit();
-            boolean r = _clients.remove(c);
-        }
+    public synchronized void removeClient(Session c) {
+        c.forceQuit();
+        System.out.println(_clients.remove(c));
+
     }
 
     /***
@@ -253,15 +252,20 @@ public class Server {
     }
 
     public void waitOnClients() {
-        synchronized (_clients) {
-            boolean loop = true;
-            while (loop) {
-                Iterator<Session> it = _clients.iterator();
-                loop = false;
-                while (it.hasNext()) {
-                    if (it.next().isConnected()) {
-                        loop = true;
-                    }
+        Object[] clients = null;
+        synchronized(_clients){
+        clients = _clients.toArray();
+        if(clients == null || clients.length==0){
+            return;
+        }
+        }
+        boolean loop = true;
+        while (loop) {
+            loop = false;
+            for (int x = 0; x < clients.length; x++) {
+                Session c = (Session)clients[x];
+                if (c.isConnected()) {
+                    loop = true;
                 }
             }
         }

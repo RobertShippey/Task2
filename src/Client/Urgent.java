@@ -5,7 +5,8 @@
 package Client;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -16,7 +17,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
@@ -32,7 +32,10 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
 
     public Urgent(){
         try{
-        MsgServer = new BufferedReader(new InputStreamReader(new Socket("localhost", 2001).getInputStream()));
+            Socket s = new Socket("localhost", 2001);
+            s.setSoTimeout(10);
+        MsgServer = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        
         } catch (IOException e){
             JOptionPane.showMessageDialog(null, e.getMessage());
             System.exit(0);
@@ -43,25 +46,25 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
         msgs = new JTextArea();
         msgs.setEditable(false);
         msgs.setText("");
+        msgs.setPreferredSize(new Dimension(200,200));
         JButton hideBtn = new JButton("Hide");
-        JPanel panel = new JPanel(new GridLayout(3, 1));
-       
-        panel.add(lbl1);
-        panel.add(msgs);
-        panel.add(hideBtn);
+        Container panel = this.getContentPane();
+        
+        panel.add(lbl1,BorderLayout.PAGE_START);
+        panel.add(msgs, BorderLayout.CENTER);
+        panel.add(hideBtn, BorderLayout.PAGE_END);
 
-        add(panel, BorderLayout.CENTER);
         hideBtn.addActionListener(this);
         setTitle("Urgent Messages!");
 
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setSize(300, 100);
-        this.setVisible(true);
+        setSize(200, 200);
+        this.pack();
     }
     
     @Override
     public void run() {
+        this.setVisible(true);
         while(!quit){
             String m = msgs.getText();
             String n = "";
@@ -71,7 +74,9 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
                 continue;
             }
             msgs.setText(n + "\n" + m);
+            this.setVisible(true);
         }
+        this.dispose();
        //stuff
     }
     

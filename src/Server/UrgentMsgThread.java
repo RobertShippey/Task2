@@ -22,6 +22,7 @@ class UrgentMsgThread extends Thread {
     private List<Socket> clients;
 
     public UrgentMsgThread(Server server) {
+        this.setName("URGNT Thread");
         this.server = server;
         try {
             s = new ServerSocket(2001);
@@ -46,12 +47,17 @@ class UrgentMsgThread extends Thread {
             }
             clients.add(cl);
         }
+        this.send("Server shutting down.");
 
     }
 
     public void send(String msg) {
         synchronized (clients) {
-            UMSender m = new UMSender((Socket[]) clients.toArray(), msg);
+            Socket[] socs = null;
+            try{
+            socs = (Socket[]) clients.toArray();
+            } catch (ClassCastException cce){}
+            UMSender m = new UMSender(socs, msg);
             m.start();
         }
     }
@@ -68,6 +74,7 @@ class UrgentMsgThread extends Thread {
 
         @Override
         public void run() {
+            if(clients == null){ return; }
             for (int x = 0; x < clients.length; x++) {
                 try {
                     clients[x].getOutputStream().write(message.getBytes());
