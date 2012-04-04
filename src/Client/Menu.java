@@ -4,18 +4,12 @@
  */
 package Client;
 
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
 public class Menu extends JFrame implements WindowListener, ActionListener{
     private static final long serialVersionUID = 1L;
@@ -90,29 +84,89 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         SUBMIT.addActionListener(this);
         panel1.add(SUBMIT);
 
-        //  panel1.add(spnDate);
+        // adding tab to tabbed gui
 
         tabbedGUI.addTab("CreateBooking", null, panel1, "First Panel");
 
         // pane 2
-
-        JLabel label2 = new JLabel("panel two", SwingConstants.LEFT);
+        
         JPanel panel2 = new JPanel();
-        panel2.add(label2);
+        
+        // adding Booking label
+
+        JLabel labelBooking = new JLabel("Booking", SwingConstants.LEFT);
+        panel2.add(labelBooking);
+        
+        // adding booking dropdown box
+        
+        JComboBox dropdownBooking;
+        String booking[] = {"booking1", "booking2", "booking3", "booking4"};
+        dropdownBooking = new JComboBox(booking);
+        panel2.add(dropdownBooking);
+        
+        // adding Booking label
+
+        JLabel labelAmendSeats = new JLabel("New No of Seats", SwingConstants.LEFT);
+        panel2.add(labelAmendSeats);
+        
+        // No of seats spinner
+        
+        String[] noOfSeats = {"1","2","3","4","5","6","7"};
+        SpinnerModel spinnerSeats = new SpinnerListModel(noOfSeats);
+        JSpinner spnList = new JSpinner(spinnerSeats);
+        panel2.add(spnList);
+        
+        // amend booking submit button
+        
+        JButton SUBMIT2 = new JButton("SUBMIT");
+        SUBMIT2.addActionListener(this);
+        panel2.add(SUBMIT2);
+        
         tabbedGUI.addTab("Amend Booking", null, panel2, "Second Panel");
 
         // pane 3
-
-        JLabel label3 = new JLabel("panel three", SwingConstants.CENTER);
+        
         JPanel panel3 = new JPanel();
-        panel3.add(label3);
+        
+        // label for Delete Booking
+
+        JLabel labelDeleteBooking = new JLabel("Booking", SwingConstants.CENTER);
+        panel3.add(labelDeleteBooking);
+        
+         // adding delete booking dropdown box
+        
+        JComboBox dropdownDeleteBooking;
+        String Dbooking[] = {"booking1", "booking2", "booking3", "booking4"};
+        dropdownDeleteBooking = new JComboBox(Dbooking);
+        panel3.add(dropdownDeleteBooking);
+        
+        // adding submit button
+        
+        JButton SUBMIT3 = new JButton("SUBMIT");
+        SUBMIT3.addActionListener(this);
+        panel3.add(SUBMIT);
+        
         tabbedGUI.addTab("Delete Booking", null, panel3, "Third Panel");
 
         // pane 4
-
-        JLabel label4 = new JLabel("panel four", SwingConstants.CENTER);
+        
         JPanel panel4 = new JPanel();
-        panel4.add(label4);
+        
+        // adding deals label
+
+        JLabel labelDeals = new JLabel("Deals", SwingConstants.CENTER);
+        panel4.add(labelDeals);
+        
+        // adding text area
+        
+        JTextArea Deals  = new JTextArea(6, 30);
+        panel4.add(Deals);
+        
+        // adding refresh button
+        JButton Refresh = new JButton("Refresh");
+        Refresh.addActionListener(this);
+        panel4.add(Refresh);
+        
         tabbedGUI.addTab("Deals", null, panel4, "Forth Panel");
         
         this.add(tabbedGUI);
