@@ -16,11 +16,15 @@ import javax.swing.SwingConstants;
 public class Menu extends JFrame implements WindowListener{
     private static final long serialVersionUID = 1L;
     private final Comms server;
+    private Urgent messages;
 
    public Menu(Comms s) {
         
       super("Client GUI");
       this.server = s;
+      
+        messages = new Urgent();
+        messages.start();
       
       JTabbedPane tabbedGUI = new JTabbedPane();
       
@@ -64,6 +68,7 @@ public class Menu extends JFrame implements WindowListener{
     @Override
     public void windowClosing(WindowEvent we) {
         server.logoff();
+        messages.stop();
         this.setVisible(false);
         try{
         Login l = new Login();

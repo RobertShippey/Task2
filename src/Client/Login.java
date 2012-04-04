@@ -62,13 +62,11 @@ public class Login extends JFrame implements ActionListener, KeyListener {
         server = new Comms("localhost");
         } catch (IOException e){
             JOptionPane.showMessageDialog(null, e.getMessage());
+            System.exit(0);
         }
         String name = usernameText.getText();
         server.logon(name);
-        
-        Urgent u = new Urgent(server);
-        u.start();
-        
+                
         Menu page = new Menu(server);
         this.setVisible(false);
         page.setVisible(true);

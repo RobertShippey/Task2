@@ -27,6 +27,7 @@ class Session extends Thread {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private LinkedList<Booking> reservations;
+    private boolean quit;
 
     public Session(Socket ip, Server s) throws IOException {
         server = s;
@@ -34,7 +35,7 @@ class Session extends Thread {
         _ip = ip;
         out = new ObjectOutputStream(_ip.getOutputStream());
         in = new ObjectInputStream(_ip.getInputStream());
-        
+        quit = false;
     }
 
     @Override
@@ -42,6 +43,7 @@ class Session extends Thread {
         try {
             _ip.setSoTimeout(Server.TIMEOUT_BLOCK);
             _name = (String) in.readObject();
+            this.setName(_name + ":Thread");
             System.out.println(_name);
             if (server.addUser(_name)) {
                 out.writeObject(null);
@@ -61,7 +63,7 @@ class Session extends Thread {
             //Didn't send a String of their username to start
         }
 
-        while (!server.quitting()) {
+        while (!quit) {
             try {
                 Request req = (Request)in.readObject();
 
@@ -74,6 +76,7 @@ class Session extends Thread {
                 if(command.equals(Request.LOG_OFF)){
                     server.removeClient(this);
                     System.out.println("Removed");
+                    quit = true;
                     return;
                 }
                 
@@ -90,11 +93,11 @@ class Session extends Thread {
     }
 
     public boolean isConnected() {
-        return _ip.isConnected();
+        return !quit;
 
     }
 
-    public void forceQuit() {
+    public synchronized void forceQuit() {
         try {
             _ip.close();
         } catch (IOException e) {

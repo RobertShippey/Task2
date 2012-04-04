@@ -14,8 +14,11 @@ import java.io.InputStreamReader;
 public class CmdThread extends Thread {
     private Server _s;
     private boolean q = false;
+    private UrgentMsgThread _t;
     
-    public CmdThread(Server s){
+    public CmdThread(Server s, UrgentMsgThread t){
+        this.setName("CMDThread");
+        _t = t;
         _s = s;
     }
     
