@@ -30,7 +30,6 @@ public class CmdThread extends Thread {
             try{
             c = in.read();}
             catch (IOException e){ continue;}
-            _t.send("Typed: " + (char)c);
             if(c == (int)'q'){
                 q = true;
                 _s.setQuit("q");

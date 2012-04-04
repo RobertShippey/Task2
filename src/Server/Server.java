@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -74,6 +73,7 @@ public class Server {
             }
 
         }
+        urgent.send("The server is shutting down!");
         if (server.forceQuitting()) {
             server.closeAllClients();
         } else {
@@ -226,10 +226,7 @@ public class Server {
      * @return 
      */
     public synchronized boolean  quitting() {
-        if (_quit) {
-            return true;
-        }
-        return false;
+        return _quit;
     }
 
     /***
@@ -253,17 +250,17 @@ public class Server {
 
     public void waitOnClients() {
         Object[] clients = null;
-        synchronized(_clients){
-        clients = _clients.toArray();
-        if(clients == null || clients.length==0){
-            return;
-        }
+        synchronized (_clients) {
+            clients = _clients.toArray();
+            if (clients == null || clients.length == 0) {
+                return;
+            }
         }
         boolean loop = true;
         while (loop) {
             loop = false;
             for (int x = 0; x < clients.length; x++) {
-                Session c = (Session)clients[x];
+                Session c = (Session) clients[x];
                 if (c.isConnected()) {
                     loop = true;
                 }

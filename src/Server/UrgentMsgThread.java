@@ -4,7 +4,9 @@
  */
 package Server;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
@@ -47,27 +49,25 @@ class UrgentMsgThread extends Thread {
             }
             clients.add(cl);
         }
-        this.send("Server shutting down.");
-
     }
 
-    public void send(String msg) {
-        synchronized (clients) {
-            Socket[] socs = null;
+    public synchronized void send(String msg) {
+            Object[] socs = null;
             try{
-            socs = (Socket[]) clients.toArray();
-            } catch (ClassCastException cce){}
+            socs = clients.toArray();
+            } catch (ClassCastException cce){System.err.println("Socket Array Problem");}
             UMSender m = new UMSender(socs, msg);
             m.start();
-        }
+        
     }
 
     class UMSender extends Thread {
 
-        private Socket[] clients;
+        private Object[] clients;
         private String message;
 
-        public UMSender(Socket[] c, String m) {
+        public UMSender(Object[] c, String m) {
+            this.setName("UM Sending: " + m);
             clients = c;
             message = m;
         }
@@ -76,8 +76,12 @@ class UrgentMsgThread extends Thread {
         public void run() {
             if(clients == null){ return; }
             for (int x = 0; x < clients.length; x++) {
+                Socket s = (Socket) clients[x];
                 try {
-                    clients[x].getOutputStream().write(message.getBytes());
+                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+                    bw.write(message);
+                    bw.newLine();
+                    bw.flush();
                 } catch (IOException e) {
                     continue;
                 }

@@ -33,7 +33,6 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
     public Urgent(){
         try{
             Socket s = new Socket("localhost", 2001);
-            s.setSoTimeout(10);
         MsgServer = new BufferedReader(new InputStreamReader(s.getInputStream()));
         
         } catch (IOException e){
@@ -73,7 +72,9 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
             } catch (IOException e){
                 continue;
             }
+            if(n!=null){
             msgs.setText(n + "\n" + m);
+            }
             this.setVisible(true);
         }
         this.dispose();
