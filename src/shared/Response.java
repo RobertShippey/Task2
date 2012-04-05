@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class Response implements Serializable {
     private static final long serialVersionUID = 1L;
     private String response;
-    private Object object;
+    private Object[] object;
     private boolean success;
     private String reason;
     
@@ -21,8 +21,8 @@ public class Response implements Serializable {
     public void setSuccess(boolean s){ this.success = s; }
     public String getResponse() { return this.response;}
     
-    public void setResponseObject(Object o){ this.object = o; }
-    public Object getResponseObject() { return this.object;}
+    public void setResponseObjects(Object[] o){ this.object = o; }
+    public Object[] getResponseObjects() { return this.object;}
     public boolean getSuccess(){ return success; }
     
     public void setReason(String r) {this.reason = r;}

@@ -41,20 +41,13 @@ public class Server {
         File users = new File("data/users.txt");
         File offers = new File("data/special_offers.csv");
         server.readFile(films, reservations, users, offers);
-        
-        
-        UrgentMsgThread urgent = new UrgentMsgThread(server);
-        urgent.start();
-        
-        CmdThread cmd = new CmdThread(server, urgent);
-        cmd.start();
-
+       
         ServerSocket s = null;
         try {
             s = new ServerSocket(2000);
             s.setSoTimeout(Server.TIMEOUT);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Main server: " + e.getMessage());
             System.exit(0);
         }
 
@@ -73,7 +66,7 @@ public class Server {
             }
 
         }
-        urgent.send("The server is shutting down!");
+        server.urgent.send("The server is shutting down!");
         if (server.forceQuitting()) {
             server.closeAllClients();
         } else {
@@ -84,21 +77,29 @@ public class Server {
 
         System.out.println("Quit");
     }
+    public final UrgentMsgThread urgent;
+    private final CmdThread cmd;
 
     public Server() {
         _clients = Collections.synchronizedList(new LinkedList<Session>());
         users = Collections.synchronizedList(new LinkedList<String>());
         _quit = false;
         _forcequit = false;
-        data = new Data();
-        offers = null;
+        
+        urgent = new UrgentMsgThread(this);
+        urgent.start();
+        
+        cmd = new CmdThread(this, urgent);
+        cmd.start();
+        
+        data = new Data(urgent);
     }
 
     public void readFile(File f, File r, File u, File s) {
         LinkedList<Booking> bll = new LinkedList<Booking>();
         LinkedList<String> ull = new LinkedList<String>();
         Film[] fl = null;
-        String[] ofrs = null;
+        String ofrs = null;
         try {
             if(!u.getParentFile().exists()){
                 u.getParentFile().mkdir();
@@ -159,13 +160,13 @@ public class Server {
                 FileInputStream of = new FileInputStream(s);
                 byte[] o = new byte[of.available()];
                 of.read(o);
-                ofrs = new String(o).split("\n");
+                ofrs = new String(o);
             }
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
         }
         users = ull;
-        this.offers = ofrs;
+        data.offers = ofrs;
     }
 
     public void writeFile(File ff, File rf, File uf) {

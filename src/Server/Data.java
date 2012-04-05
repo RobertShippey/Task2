@@ -19,11 +19,11 @@ public class Data {
 
     private Film[] films;
     private List<Booking> reservations;
+    private final UrgentMsgThread urgent;
+    public String offers;
 
-    public Data(){}
-    public Data(Film[] films, LinkedList<Booking> reservations) {
-        this.films = films;
-        this.reservations = Collections.synchronizedList(reservations);
+    public Data(UrgentMsgThread u){
+    this.urgent = u;
     }
     
     public void addReservationsLL(LinkedList<Booking> ll){
@@ -83,6 +83,9 @@ public class Data {
                 return true;
             }
         }
+        if(f.space()==0){
+            urgent.send(film + " is now fully booked at " + date + " " + time);
+        }
         return false;
     }
 
@@ -97,7 +100,11 @@ public class Data {
 
             }
         }
+        int s = f.space();
         f.free(no);
+        if (s == 0) {
+            urgent.send(film + "now has " + f.space() + " seats available at " + date + " " + time);
+        }
 
     }
 
@@ -138,5 +145,13 @@ public class Data {
             return null;
         }
 
+    }
+    
+    public String[] getFilmNames(){
+        String[] r = new String[films.length];
+        for(int x=0; x<r.length;x++){
+            r[x] = films[x].getName();
+        }
+        return r;
     }
 }
