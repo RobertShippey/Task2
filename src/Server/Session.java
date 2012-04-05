@@ -36,6 +36,7 @@ class Session extends Thread {
         out = new ObjectOutputStream(_ip.getOutputStream());
         in = new ObjectInputStream(_ip.getInputStream());
         quit = false;
+        reservations = new LinkedList<Booking>();
     }
 
     @Override
@@ -70,17 +71,29 @@ class Session extends Thread {
                 String command = req.getRequest();
                 System.out.println(command);
                 
+                String name = req.getName();
+                String film = req.getFilm();
+                String date = req.getDate();
+                String time = req.getTime();
+                int seats = req.getSeats();
+                int newSeats = req.getNewSeats();
+                
                 Response r = new Response();
 
                 if (command.equals("create")) {
-                    if(data.makeReservation(req.getName(), req.getFilm(), req.getDate(), req.getTime(), req.getSeats()))
-                    {
+                    if (data.makeReservation(name, film, date, time, seats)) {
                         r.setSuccess(true);
                     } else {
                         r.setSuccess(false);
                         r.setReason("Capacity of the film is full. Try a different showing.");
                     }
                 } else if (command.equals("amend")) {
+                    if (data.changeReservation(name, film, date, time, seats, newSeats)) {
+                        r.setSuccess(true);
+                    } else {
+                        r.setSuccess(false);
+                        r.setReason("Capacity of the film is full. Try a different showing.");
+                    }
                 } else if (command.equals("delete")) {
                 } else if (command.equals("refresh")) {
                 } else if (command.equals(Request.LOG_OFF)) {

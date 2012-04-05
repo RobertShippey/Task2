@@ -32,19 +32,23 @@ class Comms{
         in = new ObjectInputStream(server.getInputStream());
         out = new ObjectOutputStream(server.getOutputStream());
     }
-    
-    public void logon(String name){
+
+    public void logon(String name) {
         user = name;
-        try{
-        out.writeObject(user);
-        Object[] r = (Object[])in.readObject();
-        if(r!=null){
-            reservations = (Booking[])r;
-        }
+        try {
+            out.writeObject(user);
+            Object[] r = (Object[]) in.readObject();
+            if (r != null) {
+                Booking[] a = new Booking[r.length];
+                int i = 0;
+                for (Object o : r) {
+                    a[i++] = (Booking) o;
+                }
+
+                reservations = a;
+            }
         } catch (ClassNotFoundException cnf) {
-            
         } catch (IOException ioe) {
-            
         }
     }
     
@@ -67,6 +71,18 @@ class Comms{
         } else {
             return reservations[i];
         }
+    }
+    
+    public String[] getAllReservationsAsStrings(){
+        if(reservations==null){
+            String[] r = null;
+           return r;
+        }
+        String[] r = new String [reservations.length];
+        for (int x =0; x<r.length;x++){
+            r[x] = reservations[x].getFilm().getName() + ", " + reservations[x].getFilm().getDate() + ", " + reservations[x].getFilm().getTime() + ", " + reservations[x].getSeats();
+        }
+        return r;
     }
     
     public Response sendRequest(Request r){

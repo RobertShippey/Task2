@@ -90,7 +90,7 @@ public class Server {
         users = Collections.synchronizedList(new LinkedList<String>());
         _quit = false;
         _forcequit = false;
-        data = null;
+        data = new Data();
         offers = null;
     }
 
@@ -133,6 +133,8 @@ public class Server {
             } else {
                 f.createNewFile();
             }
+            
+            data.addFilmsArray(fl);
 
             if (r.exists()) {
                 FileInputStream fis = new FileInputStream(r);
@@ -151,6 +153,8 @@ public class Server {
                 r.createNewFile();
             }
             
+            data.addReservationsLL(bll);
+            
             if(s.exists()){
                 FileInputStream of = new FileInputStream(s);
                 byte[] o = new byte[of.available()];
@@ -160,7 +164,6 @@ public class Server {
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
         }
-        data = new Data(fl, bll);
         users = ull;
         this.offers = ofrs;
     }

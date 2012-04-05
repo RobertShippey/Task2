@@ -21,7 +21,16 @@ public class Request implements Serializable {
     private String date;
     private String time;
     private int seats;
+    private int newSeats;
 
+    
+    public void setNewSeats(int s){
+        this.newSeats = s;
+    }
+    
+    public int getNewSeats(){
+        return newSeats;
+    }
     
     public void setName(String n){
         this.name = n;

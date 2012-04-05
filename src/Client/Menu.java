@@ -109,8 +109,8 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         
         // adding booking dropdown box
         
-        
-        String booking[] = {"booking1", "booking2", "booking3", "booking4"};
+        String booking[] = new String[server.getReservationsLength()];
+        booking = server.getAllReservationsAsStrings();
         ABBookingDropdown = new JComboBox(booking);
         panel2.add(ABBookingDropdown);
         
@@ -255,7 +255,30 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
             
         } else if(command.equals("amend")){
             
+            Request request = new Request(command);
             
+           String booking = (String) ABBookingDropdown.getModel().getSelectedItem();
+           String data[] = booking.split(",");
+           String film = data[0].trim();
+           String date = data[1].trim();
+           String time = data[2].trim();
+           int seats = Integer.parseInt(data[3].trim());
+           int newSeats = Integer.parseInt((String) ABSeatsSpinner.getModel().getValue());
+           
+           request.setFilm(film);
+           request.setDate(date);
+           request.setTime(time);
+           request.setSeats(seats);
+           request.setNewSeats(newSeats);
+           
+           Response response = server.sendRequest(request);
+           
+            if(response.getSuccess()){
+               JOptionPane.showMessageDialog(null, "Success!");
+           } else {
+              JOptionPane.showMessageDialog(null, response.getReason());
+           }
+           return;
             
         }else if(command.equals("delete")){
            

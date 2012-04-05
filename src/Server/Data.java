@@ -20,9 +20,18 @@ public class Data {
     private Film[] films;
     private List<Booking> reservations;
 
+    public Data(){}
     public Data(Film[] films, LinkedList<Booking> reservations) {
         this.films = films;
         this.reservations = Collections.synchronizedList(reservations);
+    }
+    
+    public void addReservationsLL(LinkedList<Booking> ll){
+        this.reservations = Collections.synchronizedList(ll);
+    }
+    
+    public void addFilmsArray(Film[] films){
+        this.films = films;
     }
 
     public Booking[] getReservations(String customerName) {
@@ -30,12 +39,22 @@ public class Data {
             LinkedList<Booking> r = new LinkedList<Booking>();
             Iterator<Booking> it = reservations.iterator();
             while (it.hasNext()) {
-                if (it.next().getName().equals(customerName)) {
-                    r.add(it.next());
+                Booking res = it.next();
+                if (res.getName().equals(customerName)) {
+                    boolean add = r.add(res);
+                    System.out.println(add);
                 }
             }
             if (r.size() > 0) {
-                return (Booking[]) r.toArray();
+                
+                Booking[] a = new Booking[r.size()];
+                Object[] objArray = r.toArray();
+                int i = 0;
+                for (Object o : objArray) {
+                    a[i++] = (Booking) o;
+                }
+
+                return a;
             }
             return null;
 
