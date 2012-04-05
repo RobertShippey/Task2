@@ -4,13 +4,9 @@
  */
 package Client;
 
-/**
- *
- * @author Robert
- */
 public class Client {
-    public static void main (String[] args){
-        
+
+    public static void main(String arg[]) {
+            Login frame = new Login();
     }
-    
 }

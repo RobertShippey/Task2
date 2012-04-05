@@ -27,46 +27,75 @@ class Session extends Thread {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private LinkedList<Booking> reservations;
+    private boolean quit;
 
     public Session(Socket ip, Server s) throws IOException {
         server = s;
         data = server.getData();
         _ip = ip;
-        in = new ObjectInputStream(_ip.getInputStream());
         out = new ObjectOutputStream(_ip.getOutputStream());
-
+        in = new ObjectInputStream(_ip.getInputStream());
+        quit = false;
     }
 
     @Override
     synchronized public void run() {
         try {
-            _ip.setSoTimeout(Server.TIMEOUT);
+            _ip.setSoTimeout(Server.TIMEOUT_BLOCK);
             _name = (String) in.readObject();
-            if(server.addUser(_name)){
+            this.setName(_name + ":Thread");
+            System.out.println(_name);
+            if (server.addUser(_name)) {
                 out.writeObject(null);
             } else {
-                reservations.addAll(Arrays.asList(data.getReservations(_name)));
-                out.writeObject(reservations.toArray());
+                Booking[] b = data.getReservations(_name);
+                if (b != null) {
+                    reservations.addAll(Arrays.asList(b));
+                    out.writeObject(reservations.toArray());
+                } else {
+                    out.writeObject(null);
+                }
             }
+            _ip.setSoTimeout(Server.TIMEOUT);
         } catch (IOException ex) {
             //could not connect through socket anymore
         } catch (ClassNotFoundException ex) {
             //Didn't send a String of their username to start
         }
 
-        while (!server.quitting()) {
+        while (!quit) {
             try {
-                Request req = (Request)in.readObject();
+                Request req = (Request) in.readObject();
 
                 String command = req.getRequest();
-                Response r = new Response();
+                System.out.println(command);
                 
+                Response r = new Response();
+
+                if (command.equals("create")) {
+                    if(data.makeReservation(req.getName(), req.getFilm(), req.getDate(), req.getTime(), req.getSeats()))
+                    {
+                        r.setSuccess(true);
+                    } else {
+                        r.setSuccess(false);
+                        r.setReason("Capacity of the film is full. Try a different showing.");
+                    }
+                } else if (command.equals("amend")) {
+                } else if (command.equals("delete")) {
+                } else if (command.equals("refresh")) {
+                } else if (command.equals(Request.LOG_OFF)) {
+                    server.removeClient(this);
+                    System.out.println("Removed");
+                    quit = true;
+                    return;
+                } else {
+                    continue;
+                }
+
+
                 //processing
                 
-                if(command.equals(Request.LOG_OFF)){
-                    server.removeClient(this);
-                    return;
-                }
+                
                 
                 out.writeObject(r);
             } catch (IOException e) {
@@ -81,15 +110,15 @@ class Session extends Thread {
     }
 
     public boolean isConnected() {
-        return _ip.isConnected();
+        return !quit;
 
     }
 
-    public void forceQuit() {
+    public synchronized void forceQuit() {
         try {
             _ip.close();
         } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
-        _ip = null;
     }
 }

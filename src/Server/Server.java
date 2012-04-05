@@ -25,6 +25,7 @@ import shared.Film;
 public class Server {
     
     public static final int TIMEOUT = 10;
+    public static final int TIMEOUT_BLOCK = 0;
     //private LinkedList<Showing> _showings;
     private Data data;
     private List<Session> _clients;
@@ -41,11 +42,12 @@ public class Server {
         File offers = new File("data/special_offers.csv");
         server.readFile(films, reservations, users, offers);
         
-        CmdThread cmd = new CmdThread(server);
-        cmd.start();
-
+        
         UrgentMsgThread urgent = new UrgentMsgThread(server);
         urgent.start();
+        
+        CmdThread cmd = new CmdThread(server, urgent);
+        cmd.start();
 
         ServerSocket s = null;
         try {
@@ -61,13 +63,17 @@ public class Server {
             Socket cl = null;
             try {
                 cl = s.accept();
-                server.addClient(cl);
+            } catch (IOException e) {
+                continue;
+            }
+            try{
+             server.addClient(cl);
             } catch (IOException e) {
                 continue;
             }
 
-
         }
+        urgent.send("The server is shutting down!");
         if (server.forceQuitting()) {
             server.closeAllClients();
         } else {
@@ -77,7 +83,6 @@ public class Server {
         server.writeFile(films, reservations, users);
 
         System.out.println("Quit");
-        System.exit(0);
     }
 
     public Server() {
@@ -93,6 +98,7 @@ public class Server {
         LinkedList<Booking> bll = new LinkedList<Booking>();
         LinkedList<String> ull = new LinkedList<String>();
         Film[] fl = null;
+        String[] ofrs = null;
         try {
             if(!u.getParentFile().exists()){
                 u.getParentFile().mkdir();
@@ -118,7 +124,7 @@ public class Server {
                 if (!film[0].equals("")) {
                     for (int x = 0; x < film.length; x++) {
                         String[] items = film[x].split(",");
-                        fl[x] = new Film(items[0], items[1], Integer.parseInt(items[2]), Integer.parseInt(items[3]));
+                        fl[x] = new Film(items[0], items[1], items[2], Integer.parseInt(items[3]), Integer.parseInt(items[4]));
                     }
                 } else {
                     fl = null;
@@ -137,7 +143,7 @@ public class Server {
                 if(!records[0].equals("")){
                 for (int x = 0; x < records.length; x++) {
                     String[] row = records[x].split(",");
-                    Booking b = new Booking(row[4], data.findFilm(row[0], row[1]), Integer.parseInt(row[3]));
+                    Booking b = new Booking(row[5], data.findFilm(row[0], row[1], row[2]), Integer.parseInt(row[4]));
                     bll.add(b);
                 }}
                 fis.close();
@@ -149,14 +155,14 @@ public class Server {
                 FileInputStream of = new FileInputStream(s);
                 byte[] o = new byte[of.available()];
                 of.read(o);
-                String[] offers = new String(o).split("\n");
+                ofrs = new String(o).split("\n");
             }
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
         }
         data = new Data(fl, bll);
         users = ull;
-        this.offers = offers;
+        this.offers = ofrs;
     }
 
     public void writeFile(File ff, File rf, File uf) {
@@ -173,7 +179,7 @@ public class Server {
             Iterator<Booking> bit = data.getBookingItt();
             while(bit.hasNext()){
                 Booking b = bit.next();
-                String res = b.getName() + "," + b.getFilm().getName() + "," + b.getSeats() + "," + "\n";
+                String res = b.getFilm().getName() + "," + b.getFilm().getDate() + "," + b.getFilm().getTime() + "," + b.getFilm().getBooked() + "," + b.getSeats() + "," + b.getName();
                 fos.write(res.getBytes());
             }
             fos.close();
@@ -209,11 +215,10 @@ public class Server {
         }
     }
 
-    public void removeClient(Session c) {
-        synchronized(_clients){
+    public synchronized void removeClient(Session c) {
         c.forceQuit();
-        boolean r = _clients.remove(c);
-        }
+        System.out.println(_clients.remove(c));
+
     }
 
     /***
@@ -221,10 +226,7 @@ public class Server {
      * @return 
      */
     public synchronized boolean  quitting() {
-        if (_quit) {
-            return true;
-        }
-        return false;
+        return _quit;
     }
 
     /***
@@ -247,15 +249,20 @@ public class Server {
     }
 
     public void waitOnClients() {
+        Object[] clients = null;
         synchronized (_clients) {
-            boolean loop = true;
-            while (loop) {
-                Iterator<Session> it = _clients.iterator();
-                loop = false;
-                while (it.hasNext()) {
-                    if (it.next().isConnected()) {
-                        loop = true;
-                    }
+            clients = _clients.toArray();
+            if (clients == null || clients.length == 0) {
+                return;
+            }
+        }
+        boolean loop = true;
+        while (loop) {
+            loop = false;
+            for (int x = 0; x < clients.length; x++) {
+                Session c = (Session) clients[x];
+                if (c.isConnected()) {
+                    loop = true;
                 }
             }
         }
