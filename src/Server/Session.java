@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.LinkedList;
 import shared.Booking;
+import shared.Film;
 import shared.Request;
 import shared.Response;
 
@@ -123,9 +124,31 @@ class Session extends Thread {
                     r.setSuccess(true);
                     
                 } else if (command.equals(Request.FILM_DATES)){
-                    
+                    Object[] films = data.findFilms(film);
+                    if(films!=null){
+                    String[] dates = new String[films.length];
+                    for(int x=0;x<dates.length;x++){
+                        dates[x] = ((Film)films[x]).getDate();
+                    }
+                    r.setResponseObjects(dates);
+                    r.setSuccess(true);
+                    } else {
+                        r.setSuccess(false);
+                        r.setReason("No dates found for the specified film.");
+                    } 
                 } else if (command.equals(Request.FILM_DATE_TIMES)){
-                    
+                       Object[] films = data.findFilms(film, date);
+                    if(films!=null){
+                    String[] times = new String[films.length];
+                    for(int x=0;x<times.length;x++){
+                        times[x] = ((Film)films[x]).getDate();
+                    }
+                    r.setResponseObjects(times);
+                    r.setSuccess(true);
+                    } else {
+                        r.setSuccess(false);
+                        r.setReason("No dates found for the specified film at the specified time.");
+                    } 
                 }
                 else if (command.equals(Request.LOG_OFF)) {
                     server.removeClient(this);

@@ -154,4 +154,31 @@ public class Data {
         }
         return r;
     }
+
+    public Object[] findFilms(String film) {
+        LinkedList<Film> r = new LinkedList<Film>();
+        for(int x=0;x<films.length;x++){
+            if(films[x].getName().equals(film)){
+                r.add(films[x]);
+            }
+        }
+        if(r.isEmpty()){
+            return null;
+        }
+        return r.toArray();
+    }
+    
+    public Object[] findFilms(String film, String date){
+         LinkedList<Film> r = new LinkedList<Film>();
+        for(int x=0;x<films.length;x++){
+            if(films[x].getName().equals(film) && films[x].getDate().equals(date)){
+                r.add(films[x]);
+            }
+        }
+        if(r.isEmpty()){
+            return null;
+        }
+        return r.toArray();
+        
+    }
 }

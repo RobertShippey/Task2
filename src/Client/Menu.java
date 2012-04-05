@@ -4,6 +4,7 @@
  */
 package Client;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -151,7 +152,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
          // adding delete booking dropdown box
         
         
-        String Dbooking[] = {"booking1", "booking2", "booking3", "booking4"};
+        String Dbooking[] = server.getAllReservationsAsStrings();
         DBBookingDropdown = new JComboBox(Dbooking);
         panel3.add(DBBookingDropdown);
         
@@ -328,19 +329,18 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
     
     @Override
     public void stateChanged(ChangeEvent evt) {
+
         JTabbedPane pane = (JTabbedPane) evt.getSource();
         String name = pane.getTitleAt(pane.getSelectedIndex());
-        JPanel tab = (JPanel) pane.getTabComponentAt(pane.getSelectedIndex());
+
         if (name.equals("Create Booking")) {
-            CBFilmDropdown = new JComboBox(server.getFilmNames());
-            return;
+            CBFilmDropdown.setModel(new DefaultComboBoxModel(server.getFilmNames()));
         } else if (name.equals("Amend Booking")) {
-            ABBookingDropdown = new JComboBox(server.getAllReservationsAsStrings(true));
-            return;
+            ABBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
         } else if (name.endsWith("Delete Booking")) {
-            DBBookingDropdown = new JComboBox(server.getAllReservationsAsStrings(true));
-            return;
+            DBBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
         }
+        pane.repaint();
     }
    
 }
