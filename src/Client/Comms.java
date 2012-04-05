@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import javax.swing.JOptionPane;
 import shared.Booking;
 import shared.Request;
+import shared.Response;
 
 /**
  *
@@ -65,6 +67,18 @@ class Comms{
         } else {
             return reservations[i];
         }
+    }
+    
+    public Response sendRequest(Request r){
+      try{
+          r.setName(user);
+        out.writeObject(r);
+        return (Response) in.readObject();
+      } catch (Exception e){
+          JOptionPane.showMessageDialog(null, e.getMessage());
+      }
+     return null;
+     
     }
     
 }

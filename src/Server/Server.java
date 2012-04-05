@@ -124,7 +124,7 @@ public class Server {
                 if (!film[0].equals("")) {
                     for (int x = 0; x < film.length; x++) {
                         String[] items = film[x].split(",");
-                        fl[x] = new Film(items[0], items[1], Integer.parseInt(items[2]), Integer.parseInt(items[3]));
+                        fl[x] = new Film(items[0], items[1], items[2], Integer.parseInt(items[3]), Integer.parseInt(items[4]));
                     }
                 } else {
                     fl = null;
@@ -143,7 +143,7 @@ public class Server {
                 if(!records[0].equals("")){
                 for (int x = 0; x < records.length; x++) {
                     String[] row = records[x].split(",");
-                    Booking b = new Booking(row[4], data.findFilm(row[0], row[1]), Integer.parseInt(row[3]));
+                    Booking b = new Booking(row[5], data.findFilm(row[0], row[1], row[2]), Integer.parseInt(row[4]));
                     bll.add(b);
                 }}
                 fis.close();
@@ -179,7 +179,7 @@ public class Server {
             Iterator<Booking> bit = data.getBookingItt();
             while(bit.hasNext()){
                 Booking b = bit.next();
-                String res = b.getName() + "," + b.getFilm().getName() + "," + b.getSeats() + "," + "\n";
+                String res = b.getFilm().getName() + "," + b.getFilm().getDate() + "," + b.getFilm().getTime() + "," + b.getFilm().getBooked() + "," + b.getSeats() + "," + b.getName();
                 fos.write(res.getBytes());
             }
             fos.close();

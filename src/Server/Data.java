@@ -42,19 +42,17 @@ public class Data {
         }
     }
 
-    public Film findFilm(String name, String time) {
-        synchronized (films) {
+    public synchronized Film findFilm(String name, String date, String time) {
             for(int x=0;x<films.length;x++){
-                if (films[x].getName().equals(name) && films[x].getDate().equals(time)) {
+                if (films[x].getName().equals(name) && films[x].getDate().equals(date) && films[x].getTime().equals(time)) {
                     return films[x];
                 }
             }
-        }
         return null;
     }
 
-    public boolean makeReservation(String customer, String film, String time, int no) {
-        Film f = findFilm(film, time);
+    public boolean makeReservation(String customer, String film, String date, String time, int no) {
+        Film f = findFilm(film, date, time);
         if (f == null) {
             return false;
         }
@@ -69,8 +67,8 @@ public class Data {
         return false;
     }
 
-    public void cancelReservation(String customer, String film, String time, int no) {
-        Film f = findFilm(film, time);
+    public void cancelReservation(String customer, String film, String date, String time, int no) {
+        Film f = findFilm(film, date, time);
         Booking[] b = getReservations(customer);
         synchronized (reservations) {
             for (int x = 0; x < b.length; x++) {
@@ -84,13 +82,13 @@ public class Data {
 
     }
 
-    public boolean changeReservation(String customer, String film, String time, int oldSeats, int newSeats) {
-        this.cancelReservation(customer, film, time, oldSeats);
-        return this.makeReservation(customer, film, time, newSeats);
+    public boolean changeReservation(String customer, String film, String date, String time, int oldSeats, int newSeats) {
+        this.cancelReservation(customer, film, date, time, oldSeats);
+        return this.makeReservation(customer, film, date, time, newSeats);
     }
 
-    public boolean isFull(String film, String time) {
-        Film f = findFilm(film, time);
+    public boolean isFull(String film, String date, String time) {
+        Film f = findFilm(film, date, time);
         if (f.space() == 0) {
             return true;
         } else {
@@ -99,8 +97,8 @@ public class Data {
 
     }
 
-    public int getSpace(String film, String time) {
-        Film f = findFilm(film, time);
+    public int getSpace(String film, String date, String time) {
+        Film f = findFilm(film, date, time);
         return f.space();
     }
 

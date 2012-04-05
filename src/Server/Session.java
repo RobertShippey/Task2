@@ -65,20 +65,37 @@ class Session extends Thread {
 
         while (!quit) {
             try {
-                Request req = (Request)in.readObject();
+                Request req = (Request) in.readObject();
 
                 String command = req.getRequest();
                 System.out.println(command);
+                
                 Response r = new Response();
-                
-                //processing
-                
-                if(command.equals(Request.LOG_OFF)){
+
+                if (command.equals("create")) {
+                    if(data.makeReservation(req.getName(), req.getFilm(), req.getDate(), req.getTime(), req.getSeats()))
+                    {
+                        r.setSuccess(true);
+                    } else {
+                        r.setSuccess(false);
+                        r.setReason("Capacity of the film is full. Try a different showing.");
+                    }
+                } else if (command.equals("amend")) {
+                } else if (command.equals("delete")) {
+                } else if (command.equals("refresh")) {
+                } else if (command.equals(Request.LOG_OFF)) {
                     server.removeClient(this);
                     System.out.println("Removed");
                     quit = true;
                     return;
+                } else {
+                    continue;
                 }
+
+
+                //processing
+                
+                
                 
                 out.writeObject(r);
             } catch (IOException e) {

@@ -16,6 +16,7 @@ public class Film implements Serializable{
     private String time;
     private int capacity;
     private int booked;
+    private String date;
     
     public Film(String name, String time, int capacity){
         this.name = name;
@@ -24,8 +25,9 @@ public class Film implements Serializable{
         this.booked = 0;
     }
     
-    public Film(String name, String time, int capacity, int booked){
+    public Film(String name, String date, String time, int capacity, int booked){
         this.name = name;
+        this.date = date;
         this.time = time;
         this.capacity = capacity;
         this.booked = booked;
@@ -36,7 +38,7 @@ public class Film implements Serializable{
     }
     
     public String getDate(){
-        return this.time;
+        return this.date;
     }
     
     public int getCapacity(){
@@ -67,6 +69,10 @@ public class Film implements Serializable{
     @Override
     public String toString(){
         return this.name + "," + this.time + "," + this.capacity + "," + this.booked;
+    }
+
+    public String getTime() {
+       return this.time;
     }
     
 }

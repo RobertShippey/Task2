@@ -10,11 +10,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.*;
+import shared.Request;
+import shared.Response;
 
 public class Menu extends JFrame implements WindowListener, ActionListener{
     private static final long serialVersionUID = 1L;
     private final Comms server;
     private Urgent messages;
+    private  JComboBox CBFilmDropdown;
+    private JComboBox CBDateDropdown;
+    private JComboBox CBTimeDropdown;
+    private JComboBox CBSeatsDropdown;
+    private JTextArea DealsText;
+    private JComboBox ABBookingDropdown;
+    private JSpinner ABSeatsSpinner;
+    private JComboBox DBBookingDropdown;
 
    public Menu(Comms s) {
         
@@ -37,10 +47,10 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
 
         // dropdown box for films
 
-        JComboBox dropdown;
-        String film[] = {"Batman", "SuperMan", "Startrek", "HellBoy"};
-        dropdown = new JComboBox(film);
-        panel1.add(dropdown);
+
+        String CBfilm[] = {"Batman", "SuperMan", "Startrek", "HellBoy"};
+        CBFilmDropdown = new JComboBox(CBfilm);
+        panel1.add(CBFilmDropdown);
 
         // label for date
 
@@ -49,10 +59,10 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
 
         // Dropdown box for date
 
-        JComboBox dropdownDate;
-        String date[] = {"28/3/2012", "12/12/2012", "12/13/1415", "80/08/1355"};
-        dropdownDate = new JComboBox(date);
-        panel1.add(dropdownDate);
+        
+        String CBdate[] = {"28/3/2012", "12/12/2012", "12/13/1415", "80/08/1355"};
+        CBDateDropdown = new JComboBox(CBdate);
+        panel1.add(CBDateDropdown);
 
         // label for time
 
@@ -61,10 +71,9 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
 
         // Dropdown box for time
 
-        JComboBox dropdownTime;
         String time[] = {"28/3/2012", "12/12/2012", "12/13/1415", "80/08/1355"};
-        dropdownTime = new JComboBox(time);
-        panel1.add(dropdownTime);
+        CBTimeDropdown = new JComboBox(time);
+        panel1.add(CBTimeDropdown);
 
         // label for Seats
 
@@ -73,15 +82,16 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
 
         // Dropdown box for No of Seats
 
-        JComboBox dropdownSeats;
-        String seats[] = {"28/3/2012", "12/12/2012", "12/13/1415", "80/08/1355"};
-        dropdownSeats = new JComboBox(seats);
-        panel1.add(dropdownSeats);
+
+        String seats[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+        CBSeatsDropdown = new JComboBox(seats);
+        panel1.add(CBSeatsDropdown);
         
         // button for submit
         
         JButton SUBMIT = new JButton("SUBMIT");
         SUBMIT.addActionListener(this);
+        SUBMIT.setActionCommand("create");
         panel1.add(SUBMIT);
 
         // adding tab to tabbed gui
@@ -99,10 +109,10 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         
         // adding booking dropdown box
         
-        JComboBox dropdownBooking;
+        
         String booking[] = {"booking1", "booking2", "booking3", "booking4"};
-        dropdownBooking = new JComboBox(booking);
-        panel2.add(dropdownBooking);
+        ABBookingDropdown = new JComboBox(booking);
+        panel2.add(ABBookingDropdown);
         
         // adding Booking label
 
@@ -113,13 +123,15 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         
         String[] noOfSeats = {"1","2","3","4","5","6","7"};
         SpinnerModel spinnerSeats = new SpinnerListModel(noOfSeats);
-        JSpinner spnList = new JSpinner(spinnerSeats);
-        panel2.add(spnList);
+        ABSeatsSpinner = new JSpinner(spinnerSeats);
+        panel2.add(ABSeatsSpinner);
+       
         
         // amend booking submit button
         
         JButton SUBMIT2 = new JButton("SUBMIT");
         SUBMIT2.addActionListener(this);
+        SUBMIT2.setActionCommand("amend");
         panel2.add(SUBMIT2);
         
         tabbedGUI.addTab("Amend Booking", null, panel2, "Second Panel");
@@ -135,16 +147,18 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         
          // adding delete booking dropdown box
         
-        JComboBox dropdownDeleteBooking;
+        
         String Dbooking[] = {"booking1", "booking2", "booking3", "booking4"};
-        dropdownDeleteBooking = new JComboBox(Dbooking);
-        panel3.add(dropdownDeleteBooking);
+        DBBookingDropdown = new JComboBox(Dbooking);
+        panel3.add(DBBookingDropdown);
         
         // adding submit button
         
+        
         JButton SUBMIT3 = new JButton("SUBMIT");
         SUBMIT3.addActionListener(this);
-        panel3.add(SUBMIT);
+        SUBMIT3.setActionCommand("delete");
+        panel3.add(SUBMIT3);
         
         tabbedGUI.addTab("Delete Booking", null, panel3, "Third Panel");
 
@@ -159,12 +173,14 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         
         // adding text area
         
-        JTextArea Deals  = new JTextArea(6, 30);
-        panel4.add(Deals);
+        DealsText  = new JTextArea(6, 30);
+        DealsText.setEditable(false);
+        panel4.add(DealsText);
         
         // adding refresh button
         JButton Refresh = new JButton("Refresh");
         Refresh.addActionListener(this);
+        Refresh.setActionCommand("refresh");
         panel4.add(Refresh);
         
         tabbedGUI.addTab("Deals", null, panel4, "Forth Panel");
@@ -212,7 +228,46 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String command = e.getActionCommand();
+        if(command.equals("create")){
+            String film = (String) CBFilmDropdown.getModel().getSelectedItem();
+            String date = (String) CBDateDropdown.getModel().getSelectedItem();
+            String time = (String) CBTimeDropdown.getModel().getSelectedItem();
+            
+            //cast dropdown object to String then parse String to int
+            int seats = Integer.parseInt((String)CBSeatsDropdown.getModel().getSelectedItem());
+            
+            Request request = new Request(command);
+            
+            request.setFilm(film);
+            request.setDate(date);
+            request.setTime(time);
+            request.setSeats(seats);
+            
+           Response response = server.sendRequest(request);
+           if(response.getSuccess()){
+               JOptionPane.showMessageDialog(null, "Success!");
+           } else {
+              JOptionPane.showMessageDialog(null, response.getReason());
+           }
+           return;
+            
+            
+        } else if(command.equals("amend")){
+            
+            
+            
+        }else if(command.equals("delete")){
+           
+            
+            
+        } else if (command.equals("refresh")){
+           
+            
+            
+        } else {
+            JOptionPane.showMessageDialog(null, "Something bad happened!");
+        }
     }
    
 }
