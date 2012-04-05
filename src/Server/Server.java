@@ -39,7 +39,7 @@ public class Server {
         File films = new File("data/films.txt");
         File reservations = new File("data/reservations.txt");
         File users = new File("data/users.txt");
-        File offers = new File("data/special_offers.csv");
+        File offers = new File("data/special_offers.txt");
         server.readFile(films, reservations, users, offers);
        
         ServerSocket s = null;

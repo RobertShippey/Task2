@@ -62,6 +62,9 @@ class Comms{
     }
     
     public int getReservationsLength(){
+        if(reservations==null){
+            return 1;
+        }
         return reservations.length;
     }
     
@@ -78,6 +81,10 @@ class Comms{
             Request r = new Request(Request.MY_RESERVATIONS);
             Response response = sendRequest(r);
             Object[] objs = response.getResponseObjects();
+            if(objs==null){
+                String[] n = {""};
+                return n;
+            }
             Booking[] bookings = new Booking[objs.length];
             for (int x = 0; x < objs.length; x++) {
                 bookings[x] = (Booking) objs[x];
@@ -89,7 +96,7 @@ class Comms{
     
     public String[] getAllReservationsAsStrings(){
         if(reservations==null){
-            String[] r = null;
+            String[] r = {""};
            return r;
         }
         String[] r = new String [reservations.length];

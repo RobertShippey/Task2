@@ -178,9 +178,17 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         // adding text area
         
         DealsText  = new JTextArea(6, 30);
-        DealsText.setEditable(false);
-        panel4.add(DealsText);
-        
+       DealsText.setEditable(false);
+       panel4.add(DealsText);
+
+       Request request = new Request(Request.REFRESH_OFFERS);
+       Response response = server.sendRequest(request);
+       if (response.getSuccess()) {
+           DealsText.setText(response.getResponse());
+       } else {
+           DealsText.setText("");
+       }
+
         // adding refresh button
         JButton Refresh = new JButton("Refresh");
         Refresh.addActionListener(this);
@@ -262,6 +270,10 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
             Request request = new Request(Request.AMEND);
 
             String booking = (String) ABBookingDropdown.getModel().getSelectedItem();
+            if(booking.equals("")){
+                JOptionPane.showMessageDialog(null, "You have no bookings, make one first.");
+                return;
+            }
             String data[] = booking.split(",");
             String film = data[0].trim();
             String date = data[1].trim();
@@ -288,6 +300,10 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
             Request request = new Request(Request.DELETE);
 
             String booking = (String) DBBookingDropdown.getModel().getSelectedItem();
+            if(booking.equals("")){
+                JOptionPane.showMessageDialog(null, "You have no bookings, make one first.");
+                return;
+            }
             String data[] = booking.split(",");
             String film = data[0].trim();
             String date = data[1].trim();
@@ -329,18 +345,22 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
     
     @Override
     public void stateChanged(ChangeEvent evt) {
+        if (evt.getSource() instanceof JTabbedPane) {
+            JTabbedPane pane = (JTabbedPane) evt.getSource();
+            String name = pane.getTitleAt(pane.getSelectedIndex());
 
-        JTabbedPane pane = (JTabbedPane) evt.getSource();
-        String name = pane.getTitleAt(pane.getSelectedIndex());
-
-        if (name.equals("Create Booking")) {
-            CBFilmDropdown.setModel(new DefaultComboBoxModel(server.getFilmNames()));
-        } else if (name.equals("Amend Booking")) {
-            ABBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
-        } else if (name.endsWith("Delete Booking")) {
-            DBBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
+            if (name.equals("Create Booking")) {
+                CBFilmDropdown.setModel(new DefaultComboBoxModel(server.getFilmNames()));
+            } else if (name.equals("Amend Booking")) {
+                ABBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
+            } else if (name.endsWith("Delete Booking")) {
+                DBBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
+            }
+            pane.repaint();
+        } else if (evt.getSource() instanceof JComboBox) {
+            JComboBox box = (JComboBox) evt.getSource();
+            System.out.println(box.getActionCommand());
         }
-        pane.repaint();
+
     }
-   
 }

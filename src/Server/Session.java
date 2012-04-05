@@ -96,7 +96,7 @@ class Session extends Thread {
                         r.setReason("Capacity of the film is full. Try a different showing.");
                     }
                 } else if (command.equals(Request.DELETE)) {
-                    data.cancelReservation(time, film, date, time, seats);
+                    data.cancelReservation(name, film, date, time, seats);
                     r.setSuccess(true);
 
                 } else if (command.equals(Request.REFRESH_OFFERS)) {
@@ -104,7 +104,7 @@ class Session extends Thread {
                         r.setSuccess(false);
                         r.setReason("Offers not found");
                     } else {
-                        r.setReason(data.offers);
+                        r.setResponse(data.offers);
                         r.setSuccess(true);
                     }
                 } else if (command.equals(Request.MY_RESERVATIONS)) {
