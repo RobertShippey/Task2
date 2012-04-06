@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.LinkedList;
 import shared.Booking;
+import shared.Film;
 import shared.Request;
 import shared.Response;
 
@@ -36,6 +37,7 @@ class Session extends Thread {
         out = new ObjectOutputStream(_ip.getOutputStream());
         in = new ObjectInputStream(_ip.getInputStream());
         quit = false;
+        reservations = new LinkedList<Booking>();
     }
 
     @Override
@@ -70,26 +72,104 @@ class Session extends Thread {
                 String command = req.getRequest();
                 System.out.println(command);
                 
+                String name = req.getName();
+                String film = req.getFilm();
+                String date = req.getDate();
+                String time = req.getTime();
+                int seats = req.getSeats();
+                int newSeats = req.getNewSeats();
+                
                 Response r = new Response();
 
-                if (command.equals("create")) {
-                    if(data.makeReservation(req.getName(), req.getFilm(), req.getDate(), req.getTime(), req.getSeats()))
-                    {
+                if (command.equals(Request.MAKE)) {
+                    if (data.makeReservation(name, film, date, time, seats)) {
                         r.setSuccess(true);
                     } else {
                         r.setSuccess(false);
                         r.setReason("Capacity of the film is full. Try a different showing.");
                     }
-                } else if (command.equals("amend")) {
-                } else if (command.equals("delete")) {
-                } else if (command.equals("refresh")) {
-                } else if (command.equals(Request.LOG_OFF)) {
+                } else if (command.equals(Request.AMEND)) {
+                    if (data.changeReservation(name, film, date, time, seats, newSeats)) {
+                        r.setSuccess(true);
+                    } else {
+                        r.setSuccess(false);
+                        r.setReason("Capacity of the film is full. Try a different showing.");
+                    }
+                } else if (command.equals(Request.DELETE)) {
+                    data.cancelReservation(name, film, date, time, seats);
+                    r.setSuccess(true);
+
+                } else if (command.equals(Request.REFRESH_OFFERS)) {
+                    if (data.offers == null) {
+                        r.setSuccess(false);
+                        r.setReason("Offers not found");
+                    } else {
+                        r.setResponse(data.offers);
+                        r.setSuccess(true);
+                    }
+                } else if (command.equals(Request.MY_RESERVATIONS)) {
+                    Booking[] b = data.getReservations(_name);
+                    if (b != null) {
+                        r.setSuccess(true);
+                        r.setResponseObjects(b);
+                        reservations.removeAll(reservations);
+                        reservations.addAll(Arrays.asList(b));
+                    } else {
+                        r.setSuccess(false);
+                        r.setResponseObjects(null);
+                        r.setReason("No reservations found");
+                    }
+                } else if(command.equals(Request.FILMS)){
+                    r.setResponseObjects(data.getFilmNames());
+                    r.setSuccess(true);
+                    
+                } else if (command.equals(Request.FILM_DATES)){
+                    
+                    Object[] films = data.findFilms(film);
+                    if(films!=null){
+                    String[] dates = new String[films.length];
+                    for(int x=0;x<dates.length;x++){
+                        dates[x] = ((Film)films[x]).getDate();
+                    }
+                    r.setResponseObjects(dates);
+                    r.setSuccess(true);
+                    } else {
+                        r.setSuccess(false);
+                        r.setReason("No dates found for the specified film.");
+                    } 
+                } else if (command.equals(Request.FILM_DATE_TIMES)){
+                    Object[] films = data.findFilms(film, date);
+                    if(films!=null){
+                    String[] times = new String[films.length];
+                    for(int x=0;x<times.length;x++){
+                        times[x] = ((Film)films[x]).getTime();
+                    }
+                    r.setResponseObjects(times);
+                    r.setSuccess(true);
+                    } else {
+                        r.setSuccess(false);
+                        r.setReason("No dates found for the specified film at the specified time.");
+                    } 
+                } else if (command.equals(Request.FILM_DATE_TIME_SEATS)) {
+                    String[] seatsStrings = new String[data.findFilm(film, date, time).space()];
+                    if (seatsStrings != null) {
+                        for (int x = 0; x < seatsStrings.length; x++) {
+                            seatsStrings[x] = Integer.toString(x + 1);
+                        }
+                        r.setResponseObjects(seatsStrings);
+                        r.setSuccess(true);
+                    } else {
+                        r.setSuccess(false);
+                        r.setReason("No seats available.");
+                    }
+                }else if (command.equals(Request.LOG_OFF)) {
                     server.removeClient(this);
                     System.out.println("Removed");
                     quit = true;
                     return;
                 } else {
-                    continue;
+                    r.setSuccess(false);
+                    r.setReason("Command not understood by the server");
                 }
 
 

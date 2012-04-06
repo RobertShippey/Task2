@@ -30,7 +30,7 @@ class UrgentMsgThread extends Thread {
             s = new ServerSocket(2001);
             s.setSoTimeout(Server.TIMEOUT);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Urgent Messages: " + e.getMessage());
         }
         clients = Collections.synchronizedList(new LinkedList<Socket>());
     }

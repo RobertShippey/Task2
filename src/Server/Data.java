@@ -19,10 +19,19 @@ public class Data {
 
     private Film[] films;
     private List<Booking> reservations;
+    private final UrgentMsgThread urgent;
+    public String offers;
 
-    public Data(Film[] films, LinkedList<Booking> reservations) {
+    public Data(UrgentMsgThread u){
+    this.urgent = u;
+    }
+    
+    public void addReservationsLL(LinkedList<Booking> ll){
+        this.reservations = Collections.synchronizedList(ll);
+    }
+    
+    public void addFilmsArray(Film[] films){
         this.films = films;
-        this.reservations = Collections.synchronizedList(reservations);
     }
 
     public Booking[] getReservations(String customerName) {
@@ -30,12 +39,22 @@ public class Data {
             LinkedList<Booking> r = new LinkedList<Booking>();
             Iterator<Booking> it = reservations.iterator();
             while (it.hasNext()) {
-                if (it.next().getName().equals(customerName)) {
-                    r.add(it.next());
+                Booking res = it.next();
+                if (res.getName().equals(customerName)) {
+                    boolean add = r.add(res);
+                    System.out.println(add);
                 }
             }
             if (r.size() > 0) {
-                return (Booking[]) r.toArray();
+                
+                Booking[] a = new Booking[r.size()];
+                Object[] objArray = r.toArray();
+                int i = 0;
+                for (Object o : objArray) {
+                    a[i++] = (Booking) o;
+                }
+
+                return a;
             }
             return null;
 
@@ -64,6 +83,9 @@ public class Data {
                 return true;
             }
         }
+        if(f.space()==0){
+            urgent.send(film + " is now fully booked at " + date + " " + time);
+        }
         return false;
     }
 
@@ -78,7 +100,11 @@ public class Data {
 
             }
         }
+        int s = f.space();
         f.free(no);
+        if (s == 0) {
+            urgent.send(film + "now has " + f.space() + " seats available at " + date + " " + time);
+        }
 
     }
 
@@ -119,5 +145,40 @@ public class Data {
             return null;
         }
 
+    }
+    
+    public String[] getFilmNames(){
+        String[] r = new String[films.length];
+        for(int x=0; x<r.length;x++){
+            r[x] = films[x].getName();
+        }
+        return r;
+    }
+
+    public Object[] findFilms(String film) {
+        LinkedList<Film> r = new LinkedList<Film>();
+        for(int x=0;x<films.length;x++){
+            if(films[x].getName().equals(film)){
+                r.add(films[x]);
+            }
+        }
+        if(r.isEmpty()){
+            return null;
+        }
+        return r.toArray();
+    }
+    
+    public Object[] findFilms(String film, String date){
+         LinkedList<Film> r = new LinkedList<Film>();
+        for(int x=0;x<films.length;x++){
+            if(films[x].getName().equals(film) && films[x].getDate().equals(date)){
+                r.add(films[x]);
+            }
+        }
+        if(r.isEmpty()){
+            return null;
+        }
+        return r.toArray();
+        
     }
 }

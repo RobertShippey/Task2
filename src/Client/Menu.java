@@ -4,16 +4,19 @@
  */
 package Client;
 
-import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import shared.Request;
 import shared.Response;
 
-public class Menu extends JFrame implements WindowListener, ActionListener{
+public class Menu extends JFrame implements WindowListener, ActionListener, ChangeListener, ItemListener{
     private static final long serialVersionUID = 1L;
     private final Comms server;
     private Urgent messages;
@@ -25,6 +28,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
     private JComboBox ABBookingDropdown;
     private JSpinner ABSeatsSpinner;
     private JComboBox DBBookingDropdown;
+    private final JTabbedPane tabbedGUI;
 
    public Menu(Comms s) {
         
@@ -33,13 +37,15 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
       
         messages = new Urgent();
         messages.start();
-      
+   
+
+       tabbedGUI = new JTabbedPane();
+       tabbedGUI.addChangeListener(this);
+
        // Pane 1
 
         JPanel panel1 = new JPanel();
-        
-        JTabbedPane tabbedGUI = new JTabbedPane();
-
+       
         // label for film
 
         JLabel labelFilm = new JLabel("Film", SwingConstants.LEFT);
@@ -48,8 +54,9 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         // dropdown box for films
 
 
-        String CBfilm[] = {"Batman", "SuperMan", "Startrek", "HellBoy"};
+        String CBfilm[] = server.getFilmNames();
         CBFilmDropdown = new JComboBox(CBfilm);
+        CBFilmDropdown.addItemListener(this);
         panel1.add(CBFilmDropdown);
 
         // label for date
@@ -60,8 +67,9 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         // Dropdown box for date
 
         
-        String CBdate[] = {"28/3/2012", "12/12/2012", "12/13/1415", "80/08/1355"};
+        String CBdate[] = server.getFilmDates((String)CBFilmDropdown.getModel().getSelectedItem());
         CBDateDropdown = new JComboBox(CBdate);
+        CBDateDropdown.addItemListener(this);
         panel1.add(CBDateDropdown);
 
         // label for time
@@ -71,8 +79,9 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
 
         // Dropdown box for time
 
-        String time[] = {"28/3/2012", "12/12/2012", "12/13/1415", "80/08/1355"};
+        String time[] = server.getFilmDateTimes((String)CBFilmDropdown.getModel().getSelectedItem(), (String)CBDateDropdown.getModel().getSelectedItem());
         CBTimeDropdown = new JComboBox(time);
+        CBTimeDropdown.addItemListener(this);
         panel1.add(CBTimeDropdown);
 
         // label for Seats
@@ -96,7 +105,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
 
         // adding tab to tabbed gui
 
-        tabbedGUI.addTab("CreateBooking", null, panel1, "First Panel");
+        tabbedGUI.addTab("Create Booking", null, panel1, "First Panel");
 
         // pane 2
         
@@ -109,8 +118,8 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         
         // adding booking dropdown box
         
-        
-        String booking[] = {"booking1", "booking2", "booking3", "booking4"};
+        String booking[] = new String[server.getReservationsLength()];
+        booking = server.getAllReservationsAsStrings();
         ABBookingDropdown = new JComboBox(booking);
         panel2.add(ABBookingDropdown);
         
@@ -148,7 +157,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
          // adding delete booking dropdown box
         
         
-        String Dbooking[] = {"booking1", "booking2", "booking3", "booking4"};
+        String Dbooking[] = server.getAllReservationsAsStrings();
         DBBookingDropdown = new JComboBox(Dbooking);
         panel3.add(DBBookingDropdown);
         
@@ -174,9 +183,17 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         // adding text area
         
         DealsText  = new JTextArea(6, 30);
-        DealsText.setEditable(false);
-        panel4.add(DealsText);
-        
+       DealsText.setEditable(false);
+       panel4.add(DealsText);
+
+       Request request = new Request(Request.REFRESH_OFFERS);
+       Response response = server.sendRequest(request);
+       if (response.getSuccess()) {
+           DealsText.setText(response.getResponse());
+       } else {
+           DealsText.setText("");
+       }
+
         // adding refresh button
         JButton Refresh = new JButton("Refresh");
         Refresh.addActionListener(this);
@@ -190,7 +207,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(this);
         setLocationRelativeTo(null);
-        setSize(401, 200);
+        setSize(450, 220);
     }
    
    @Override
@@ -229,45 +246,159 @@ public class Menu extends JFrame implements WindowListener, ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-        if(command.equals("create")){
+        if (command.equals("create")) {
             String film = (String) CBFilmDropdown.getModel().getSelectedItem();
             String date = (String) CBDateDropdown.getModel().getSelectedItem();
             String time = (String) CBTimeDropdown.getModel().getSelectedItem();
-            
+
             //cast dropdown object to String then parse String to int
-            int seats = Integer.parseInt((String)CBSeatsDropdown.getModel().getSelectedItem());
-            
-            Request request = new Request(command);
-            
+            int seats = Integer.parseInt((String) CBSeatsDropdown.getModel().getSelectedItem());
+
+            Request request = new Request(Request.MAKE);
+
             request.setFilm(film);
             request.setDate(date);
             request.setTime(time);
             request.setSeats(seats);
+
+            Response response = server.sendRequest(request);
+            if (response.getSuccess()) {
+                JOptionPane.showMessageDialog(null, "Success!");
+            } else {
+                JOptionPane.showMessageDialog(null, response.getReason());
+            }
+            return;
+
+
+        } else if (command.equals("amend")) {
+
+            Request request = new Request(Request.AMEND);
+
+            String booking = (String) ABBookingDropdown.getModel().getSelectedItem();
+            if(booking.equals("")){
+                JOptionPane.showMessageDialog(null, "You have no bookings, make one first.");
+                return;
+            }
+            String data[] = booking.split(",");
+            String film = data[0].trim();
+            String date = data[1].trim();
+            String time = data[2].trim();
+            int seats = Integer.parseInt(data[3].trim());
+            int newSeats = Integer.parseInt((String) ABSeatsSpinner.getModel().getValue());
+
+            request.setFilm(film);
+            request.setDate(date);
+            request.setTime(time);
+            request.setSeats(seats);
+            request.setNewSeats(newSeats);
+
+            Response response = server.sendRequest(request);
             
-           Response response = server.sendRequest(request);
-           if(response.getSuccess()){
-               JOptionPane.showMessageDialog(null, "Success!");
-           } else {
-              JOptionPane.showMessageDialog(null, response.getReason());
-           }
-           return;
+            String[] r = server.getAllReservationsAsStrings(true);
+            ABBookingDropdown.setModel(new DefaultComboBoxModel(r));
+            ABBookingDropdown.validate();
+            ABBookingDropdown.repaint();
             
+            if (response.getSuccess()) {
+                JOptionPane.showMessageDialog(null, "Success!");
+            } else {
+                JOptionPane.showMessageDialog(null, response.getReason());
+            }
+            return;
+
+        } else if (command.equals("delete")) {
+            Request request = new Request(Request.DELETE);
+
+            String booking = (String) DBBookingDropdown.getModel().getSelectedItem();
+            if(booking.equals("")){
+                JOptionPane.showMessageDialog(null, "You have no bookings, make one first.");
+                return;
+            }
+            String data[] = booking.split(",");
+            String film = data[0].trim();
+            String date = data[1].trim();
+            String time = data[2].trim();
+            int seats = Integer.parseInt(data[3].trim());
+
+            request.setFilm(film);
+            request.setDate(date);
+            request.setTime(time);
+            request.setSeats(seats);
+
+            Response response = server.sendRequest(request);
             
-        } else if(command.equals("amend")){
-            
-            
-            
-        }else if(command.equals("delete")){
-           
-            
-            
-        } else if (command.equals("refresh")){
-           
-            
-            
+            DBBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
+            DBBookingDropdown.validate();
+            DBBookingDropdown.repaint();
+
+            if (response.getSuccess()) {
+                JOptionPane.showMessageDialog(null, "Success!");
+            } else {
+                JOptionPane.showMessageDialog(null, response.getReason());
+            }
+            return;
+
+        } else if (command.equals("refresh")) {
+            Request request = new Request(Request.REFRESH_OFFERS);
+
+            Response response = server.sendRequest(request);
+            if (response.getSuccess()) {
+                DealsText.setText(response.getResponse());
+                return;
+            } else {
+                JOptionPane.showMessageDialog(null, response.getReason());
+                return;
+            }
+
         } else {
             JOptionPane.showMessageDialog(null, "Something bad happened!");
+            return;
         }
     }
-   
+    
+    
+    @Override
+    public void stateChanged(ChangeEvent evt) {
+        if (evt.getSource() instanceof JTabbedPane) {
+            JTabbedPane pane = (JTabbedPane) evt.getSource();
+            String name = pane.getTitleAt(pane.getSelectedIndex());
+
+            if (name.equals("Create Booking")) {
+                CBFilmDropdown.setModel(new DefaultComboBoxModel(server.getFilmNames()));
+            } else if (name.equals("Amend Booking")) {
+                ABBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
+            } else if (name.endsWith("Delete Booking")) {
+                DBBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
+            }
+            pane.repaint();
+        } else if (evt.getSource() instanceof JComboBox) {
+            JComboBox box = (JComboBox) evt.getSource();
+            System.out.println(box.getActionCommand());
+        }
+
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent ie) {
+        JComboBox box = (JComboBox) ie.getSource();
+        if(box == CBFilmDropdown){
+            String film = (String)box.getModel().getSelectedItem();
+            String[] dates = server.getFilmDates(film);
+            CBDateDropdown.setModel(new DefaultComboBoxModel(dates));
+            itemStateChanged(new ItemEvent(CBDateDropdown, 0, null, 0));
+        } else if (box == CBDateDropdown) {
+            String film = (String) CBFilmDropdown.getModel().getSelectedItem();
+            String date = (String)box.getModel().getSelectedItem();
+            String[] times = server.getFilmDateTimes(film, date);
+            CBTimeDropdown.setModel(new DefaultComboBoxModel(times));
+            itemStateChanged(new ItemEvent(CBTimeDropdown, 0, null, 0));
+        } else if(box == CBTimeDropdown){
+            String film = (String) CBFilmDropdown.getModel().getSelectedItem();
+            String date = (String)CBDateDropdown.getModel().getSelectedItem();
+            String time = (String)box.getModel().getSelectedItem();
+            String[] seats = server.getFilmDateTimeSeats(film, date, time);
+            CBSeatsDropdown.setModel(new DefaultComboBoxModel(seats));
+            
+        }
+    }
 }
