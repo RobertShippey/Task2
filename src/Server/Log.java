@@ -7,6 +7,7 @@ package Server;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -32,24 +33,27 @@ public class Log {
 
     private String getTime() {
         now = Calendar.getInstance();
-        String time = now.get(Calendar.DAY_OF_MONTH) + "-" + now.get(Calendar.MONTH) + "-" + now.get(Calendar.YEAR) + " " + now.get(Calendar.HOUR_OF_DAY) + "." + now.get(Calendar.MINUTE) + "." + now.get(Calendar.SECOND);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = sdf.format(now.getTime());
         return time;
     }
 
     public boolean writeMessage(String msg, boolean stdout) {
         try {
-            String message = getTime() + ": " + msg + "\n";
+            String message = getTime() + ":: " + msg + "\n";
             if(stdout){ System.out.print(message); }
             log.write(message);
             log.flush();
             return true;
         } catch (IOException e) {
+            System.err.print(getTime() + ": Could not write message: " + msg);
             return false;
         }
     }
 
     public boolean writeError(String err, boolean stdout) {
-        return writeMessage("ERROR: " + err, stdout);
+        System.err.println(getTime() + ":: " + err);
+        return writeMessage("ERROR: " + err, false);
     }
 
     public boolean writeEvent(String e, boolean stdout) {
