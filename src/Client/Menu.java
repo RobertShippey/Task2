@@ -4,9 +4,10 @@
  */
 package Client;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.*;
@@ -15,7 +16,7 @@ import javax.swing.event.ChangeListener;
 import shared.Request;
 import shared.Response;
 
-public class Menu extends JFrame implements WindowListener, ActionListener, ChangeListener{
+public class Menu extends JFrame implements WindowListener, ActionListener, ChangeListener, ItemListener{
     private static final long serialVersionUID = 1L;
     private final Comms server;
     private Urgent messages;
@@ -27,6 +28,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
     private JComboBox ABBookingDropdown;
     private JSpinner ABSeatsSpinner;
     private JComboBox DBBookingDropdown;
+    private final JTabbedPane tabbedGUI;
 
    public Menu(Comms s) {
         
@@ -37,7 +39,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         messages.start();
    
 
-       JTabbedPane tabbedGUI = new JTabbedPane();
+       tabbedGUI = new JTabbedPane();
        tabbedGUI.addChangeListener(this);
 
        // Pane 1
@@ -54,6 +56,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
 
         String CBfilm[] = server.getFilmNames();
         CBFilmDropdown = new JComboBox(CBfilm);
+        CBFilmDropdown.addItemListener(this);
         panel1.add(CBFilmDropdown);
 
         // label for date
@@ -66,6 +69,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         
         String CBdate[] = server.getFilmDates((String)CBFilmDropdown.getModel().getSelectedItem());
         CBDateDropdown = new JComboBox(CBdate);
+        CBDateDropdown.addItemListener(this);
         panel1.add(CBDateDropdown);
 
         // label for time
@@ -77,6 +81,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
 
         String time[] = server.getFilmDateTimes((String)CBFilmDropdown.getModel().getSelectedItem(), (String)CBDateDropdown.getModel().getSelectedItem());
         CBTimeDropdown = new JComboBox(time);
+        CBTimeDropdown.addItemListener(this);
         panel1.add(CBTimeDropdown);
 
         // label for Seats
@@ -202,7 +207,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(this);
         setLocationRelativeTo(null);
-        setSize(420, 220);
+        setSize(450, 220);
     }
    
    @Override
@@ -288,7 +293,12 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
             request.setNewSeats(newSeats);
 
             Response response = server.sendRequest(request);
-
+            
+            String[] r = server.getAllReservationsAsStrings(true);
+            ABBookingDropdown.setModel(new DefaultComboBoxModel(r));
+            ABBookingDropdown.validate();
+            ABBookingDropdown.repaint();
+            
             if (response.getSuccess()) {
                 JOptionPane.showMessageDialog(null, "Success!");
             } else {
@@ -316,6 +326,10 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
             request.setSeats(seats);
 
             Response response = server.sendRequest(request);
+            
+            DBBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
+            DBBookingDropdown.validate();
+            DBBookingDropdown.repaint();
 
             if (response.getSuccess()) {
                 JOptionPane.showMessageDialog(null, "Success!");
@@ -362,5 +376,29 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
             System.out.println(box.getActionCommand());
         }
 
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent ie) {
+        JComboBox box = (JComboBox) ie.getSource();
+        if(box == CBFilmDropdown){
+            String film = (String)box.getModel().getSelectedItem();
+            String[] dates = server.getFilmDates(film);
+            CBDateDropdown.setModel(new DefaultComboBoxModel(dates));
+            itemStateChanged(new ItemEvent(CBDateDropdown, 0, null, 0));
+        } else if (box == CBDateDropdown) {
+            String film = (String) CBFilmDropdown.getModel().getSelectedItem();
+            String date = (String)box.getModel().getSelectedItem();
+            String[] times = server.getFilmDateTimes(film, date);
+            CBTimeDropdown.setModel(new DefaultComboBoxModel(times));
+            itemStateChanged(new ItemEvent(CBTimeDropdown, 0, null, 0));
+        } else if(box == CBTimeDropdown){
+            String film = (String) CBFilmDropdown.getModel().getSelectedItem();
+            String date = (String)CBDateDropdown.getModel().getSelectedItem();
+            String time = (String)box.getModel().getSelectedItem();
+            String[] seats = server.getFilmDateTimeSeats(film, date, time);
+            CBSeatsDropdown.setModel(new DefaultComboBoxModel(seats));
+            
+        }
     }
 }

@@ -149,12 +149,36 @@ class Comms{
         
         Response response = sendRequest(req);
         Object[] obj = response.getResponseObjects();
+        if(obj!=null){
         String[] r = new String[obj.length];
         for(int x=0;x<obj.length;x++){
             r[x] = (String) obj[x];
         }
         return r;
+        } else {
+            String[] n = {""};
+            return n;
+        }
         
+    }
+
+    String[] getFilmDateTimeSeats(String film, String date, String time) {
+        Request req = new Request(Request.FILM_DATE_TIME_SEATS);
+        req.setFilm(film);
+        req.setDate(date);
+        req.setTime(time);
+        
+        Response response = sendRequest(req);
+        Object[] obj = response.getResponseObjects();
+        if(obj==null){
+            String[] n = {""};
+            return n;
+        }
+        String[] r = new String[obj.length];
+        for(int x=0;x<obj.length;x++){
+            r[x] = (String) obj[x];
+        }
+        return r;
     }
     
 }

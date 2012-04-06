@@ -21,6 +21,7 @@ public class Request implements Serializable {
     public static final String MY_RESERVATIONS = "GETALLMYRESERVATIONS";
     public static final String FILM_DATES = "GETFILMDATES";
     public static final String FILM_DATE_TIMES = "GETFILMDATETIMES";
+    public static final String FILM_DATE_TIME_SEATS = "GETFILMDATETIMESEATS";
     
     private static final long serialVersionUID = 1L;
     
