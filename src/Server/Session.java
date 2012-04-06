@@ -46,7 +46,7 @@ class Session extends Thread {
             _ip.setSoTimeout(Server.TIMEOUT_BLOCK);
             _name = (String) in.readObject();
             this.setName(_name + ":Thread");
-            System.out.println(_name);
+            server.log.writeError("Connected: " + _name, true);
             if (server.addUser(_name)) {
                 out.writeObject(null);
             } else {
@@ -60,9 +60,13 @@ class Session extends Thread {
             }
             _ip.setSoTimeout(Server.TIMEOUT);
         } catch (IOException ex) {
-            //could not connect through socket anymore
+            if(_name == null) {_name = "Unknown"; }
+            server.log.writeError(_name + " session: " + ex.getMessage(), true);
+            return;
         } catch (ClassNotFoundException ex) {
-            //Didn't send a String of their username to start
+            if(_name == null) {_name = "Unknown"; }
+            server.log.writeError(_name + " session: " + ex.getMessage(), true);
+            return;
         }
 
         while (!quit) {
@@ -70,7 +74,7 @@ class Session extends Thread {
                 Request req = (Request) in.readObject();
 
                 String command = req.getRequest();
-                System.out.println(command);
+                server.log.writeEvent(_name + " session: requested " + command, false);
                 
                 String name = req.getName();
                 String film = req.getFilm();
@@ -164,7 +168,6 @@ class Session extends Thread {
                     }
                 }else if (command.equals(Request.LOG_OFF)) {
                     server.removeClient(this);
-                    System.out.println("Removed");
                     quit = true;
                     return;
                 } else {
@@ -172,33 +175,23 @@ class Session extends Thread {
                     r.setReason("Command not understood by the server");
                 }
 
-
-                //processing
-                
-                
-                
                 out.writeObject(r);
             } catch (IOException e) {
-                //could not connect though socket anymore
             } catch (ClassNotFoundException cnf) {
-                //client sent something weird
+                server.log.writeError(_name + " session: " + cnf.getMessage(), true);
             }
         }
-
-
-
     }
 
     public boolean isConnected() {
         return !quit;
-
     }
 
     public synchronized void forceQuit() {
         try {
             _ip.close();
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            
         }
     }
 }
