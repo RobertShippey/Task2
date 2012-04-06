@@ -30,7 +30,7 @@ class UrgentMsgThread extends Thread {
             s = new ServerSocket(2001);
             s.setSoTimeout(Server.TIMEOUT);
         } catch (IOException e) {
-            System.err.println("Urgent Messages: " + e.getMessage());
+            server.log.writeError("Urgent Messages: " + e.getMessage(), true);
         }
         clients = Collections.synchronizedList(new LinkedList<Socket>());
     }
@@ -55,7 +55,9 @@ class UrgentMsgThread extends Thread {
             Object[] socs = null;
             try{
             socs = clients.toArray();
-            } catch (ClassCastException cce){System.err.println("Socket Array Problem");}
+            } catch (ClassCastException cce){
+                server.log.writeError("Urgent Messages: " + cce.getMessage(), true);
+            }
             UMSender m = new UMSender(socs, msg);
             m.start();
         
