@@ -22,15 +22,17 @@ public class Log {
     public Log() {
         try {
             logfile = new File("logs/" + getTime() + ".log");
+            if(!logfile.getParentFile().exists()) { logfile.getParentFile().mkdir(); }
             log = new FileWriter(logfile);
         } catch (IOException ex) {
+            System.err.println(ex.getMessage());
             return;
         }
     }
 
     private String getTime() {
         now = Calendar.getInstance();
-        String time = now.get(Calendar.DAY_OF_MONTH) + "-" + now.get(Calendar.MONTH) + "-" + now.get(Calendar.YEAR) + "-" + now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE);
+        String time = now.get(Calendar.DAY_OF_MONTH) + "-" + now.get(Calendar.MONTH) + "-" + now.get(Calendar.YEAR) + " " + now.get(Calendar.HOUR_OF_DAY) + "." + now.get(Calendar.MINUTE) + "." + now.get(Calendar.SECOND);
         return time;
     }
 

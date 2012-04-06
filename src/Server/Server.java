@@ -47,11 +47,11 @@ public class Server {
             s = new ServerSocket(2000);
             s.setSoTimeout(Server.TIMEOUT);
         } catch (IOException e) {
-            System.err.println("Main server: " + e.getMessage());
+            server.log.writeError(e.getMessage(), true);
             System.exit(0);
         }
 
-        System.out.println("Running");
+        server.log.writeEvent("Running", true);
         while (!server.quitting()) {
             Socket cl = null;
             try {
@@ -75,12 +75,15 @@ public class Server {
 
         server.writeFile(films, reservations, users);
 
-        System.out.println("Quit");
+        server.log.writeEvent("Shutdown", true);
     }
     public final UrgentMsgThread urgent;
     private final CmdThread cmd;
+    public final Log log;
 
     public Server() {
+        log = new Log();
+        log.writeEvent("Started", false);
         _clients = Collections.synchronizedList(new LinkedList<Session>());
         users = Collections.synchronizedList(new LinkedList<String>());
         _quit = false;
@@ -163,7 +166,7 @@ public class Server {
                 ofrs = new String(o);
             }
         } catch (IOException ioe) {
-            System.err.println(ioe.getMessage());
+            log.writeError(ioe.getMessage(), true);
         }
         users = ull;
         data.offers = ofrs;
@@ -200,6 +203,7 @@ public class Server {
             fos.close();
             
         } catch (IOException ioe) {
+            log.writeError(ioe.getMessage(), true);
         }
 
     }
@@ -221,8 +225,6 @@ public class Server {
 
     public synchronized void removeClient(Session c) {
         c.forceQuit();
-        System.out.println(_clients.remove(c));
-
     }
 
     /***
@@ -253,6 +255,7 @@ public class Server {
     }
 
     public void waitOnClients() {
+        log.writeMessage("Waiting for clients to disconnect", false);
         Object[] clients = null;
         synchronized (_clients) {
             clients = _clients.toArray();
@@ -273,6 +276,7 @@ public class Server {
     }
 
     public void closeAllClients() {
+        log.writeMessage("Disconnecting all clients", false);
         synchronized (_clients) {
             Iterator<Session> it = _clients.iterator();
             while (it.hasNext()) {
