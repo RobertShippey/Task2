@@ -63,7 +63,7 @@ class Comms{
     
     public int getReservationsLength(){
         if(reservations==null){
-            return 1;
+            return 0;
         }
         return reservations.length;
     }
@@ -121,7 +121,7 @@ class Comms{
     public String[] getFilmNames(){
         Request r = new Request(Request.FILMS);
         Response response = sendRequest(r);
-        Object[] filmObjs =  response.getResponseObjects();
+        Object[] filmObjs =  removeDuplicates(response.getResponseObjects());
         String[] films = new String[filmObjs.length];
         for(int x =0; x<filmObjs.length;x++){
             films[x] = (String) filmObjs[x];
@@ -134,7 +134,7 @@ class Comms{
         req.setFilm(film);
         
         Response response = sendRequest(req);
-        Object[] obj = response.getResponseObjects();
+        Object[] obj = removeDuplicates(response.getResponseObjects());
         String[] r = new String[obj.length];
         for(int x=0;x<obj.length;x++){
             r[x] = (String) obj[x];
@@ -148,7 +148,7 @@ class Comms{
         req.setDate(date);
         
         Response response = sendRequest(req);
-        Object[] obj = response.getResponseObjects();
+        Object[] obj = removeDuplicates(response.getResponseObjects());
         if(obj!=null){
         String[] r = new String[obj.length];
         for(int x=0;x<obj.length;x++){
@@ -169,7 +169,7 @@ class Comms{
         req.setTime(time);
         
         Response response = sendRequest(req);
-        Object[] obj = response.getResponseObjects();
+        Object[] obj = removeDuplicates(response.getResponseObjects());
         if(obj==null){
             String[] n = {""};
             return n;
@@ -177,6 +177,32 @@ class Comms{
         String[] r = new String[obj.length];
         for(int x=0;x<obj.length;x++){
             r[x] = (String) obj[x];
+        }
+        return r;
+    }
+    
+    private Object[] removeDuplicates(final Object[] objs){
+        if(objs == null || objs.length==0) { return null; }
+        int count = 1;
+        boolean[] unique = new boolean[objs.length];
+        unique[0] = true;
+        for(int x=1;x<objs.length;x++){
+            unique[x] = true;
+            for(int y=0;y<x;y++){
+                if((objs[x].toString().equals(objs[y].toString()))){
+                    unique[x] = false;
+                    break;
+                }
+            }
+            if(unique[x]) { count++; }
+        }
+        
+        Object[] r = new Object[count];
+        int i=0;
+        for(int x=0;x<objs.length;x++){
+            if(unique[x]){
+                r[i++] = objs[x];
+            }
         }
         return r;
     }

@@ -36,7 +36,7 @@ class UrgentMsgThread extends Thread {
     }
 
     @Override
-    synchronized public void run() {
+    public void run() {
         if (s == null) {
             return;
         }
@@ -47,7 +47,8 @@ class UrgentMsgThread extends Thread {
             } catch (IOException e) {
                 continue;
             }
-            clients.add(cl);
+            synchronized(clients){
+            clients.add(cl);}
         }
     }
 

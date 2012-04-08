@@ -186,7 +186,7 @@ public class Server {
             Iterator<Booking> bit = data.getBookingItt();
             while(bit.hasNext()){
                 Booking b = bit.next();
-                String res = b.getFilm().getName() + "," + b.getFilm().getDate() + "," + b.getFilm().getTime() + "," + b.getFilm().getBooked() + "," + b.getSeats() + "," + b.getName();
+                String res = b.getFilm().getName() + "," + b.getFilm().getDate() + "," + b.getFilm().getTime() + "," + b.getFilm().getBooked() + "," + b.getSeats() + "," + b.getName() + "\n";
                 fos.write(res.getBytes());
             }
             fos.close();

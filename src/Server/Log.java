@@ -46,13 +46,13 @@ public class Log {
             log.flush();
             return true;
         } catch (IOException e) {
-            System.err.print(getTime() + ": Could not write message: " + msg);
+            System.err.print(getTime() + ":: Could not write message: " + msg);
             return false;
         }
     }
 
     public boolean writeError(String err, boolean stdout) {
-        System.err.println(getTime() + ":: " + err);
+        System.err.println(getTime() + ":: ERROR:" + err);
         return writeMessage("ERROR: " + err, false);
     }
 

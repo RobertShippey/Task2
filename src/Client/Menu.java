@@ -92,7 +92,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         // Dropdown box for No of Seats
 
 
-        String seats[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+        String seats[] = server.getFilmDateTimeSeats((String)CBFilmDropdown.getModel().getSelectedItem(), (String)CBDateDropdown.getModel().getSelectedItem(), (String)CBTimeDropdown.getModel().getSelectedItem());
         CBSeatsDropdown = new JComboBox(seats);
         panel1.add(CBSeatsDropdown);
         
@@ -118,8 +118,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         
         // adding booking dropdown box
         
-        String booking[] = new String[server.getReservationsLength()];
-        booking = server.getAllReservationsAsStrings();
+        String booking[] = server.getAllReservationsAsStrings();
         ABBookingDropdown = new JComboBox(booking);
         panel2.add(ABBookingDropdown);
         
@@ -130,12 +129,27 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         
         // No of seats spinner
         
-        String[] noOfSeats = {"1","2","3","4","5","6","7"};
-        SpinnerModel spinnerSeats = new SpinnerListModel(noOfSeats);
-        ABSeatsSpinner = new JSpinner(spinnerSeats);
-        panel2.add(ABSeatsSpinner);
-       
-        
+       ABSeatsSpinner = new JSpinner();
+
+       String noOfSeats[] = {"0"};
+       String ABseats = "0";
+       ABSeatsSpinner.setModel(new SpinnerListModel(noOfSeats));
+       ABSeatsSpinner.getModel().setValue(noOfSeats[0]);
+       panel2.add(ABSeatsSpinner);
+
+       String reservation = (String) ABBookingDropdown.getModel().getSelectedItem();
+       if (!reservation.equals("")) {
+           String data[] = reservation.split(",");
+           String ABfilm = data[0].trim();
+           String ABdate = data[1].trim();
+           String ABtime = data[2].trim();
+           ABseats = data[3].trim();
+
+           ABSeatsSpinner.setModel(new SpinnerListModel(server.getFilmDateTimeSeats(ABfilm, ABdate, ABtime)));
+           //ABSeatsSpinner.getModel().setValue(ABseats);
+       }
+
+
         // amend booking submit button
         
         JButton SUBMIT2 = new JButton("SUBMIT");
@@ -252,7 +266,13 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
             String time = (String) CBTimeDropdown.getModel().getSelectedItem();
 
             //cast dropdown object to String then parse String to int
-            int seats = Integer.parseInt((String) CBSeatsDropdown.getModel().getSelectedItem());
+            int seats = 0;
+            try{
+            seats = Integer.parseInt((String) CBSeatsDropdown.getModel().getSelectedItem());
+            } catch (NumberFormatException ne){
+                JOptionPane.showMessageDialog(null, "Looks like there are no eats available for this showing.");
+                return;
+            }
 
             Request request = new Request(Request.MAKE);
 
@@ -365,17 +385,29 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
 
             if (name.equals("Create Booking")) {
                 CBFilmDropdown.setModel(new DefaultComboBoxModel(server.getFilmNames()));
+                itemStateChanged(new ItemEvent(CBFilmDropdown, 0, null, 0));
             } else if (name.equals("Amend Booking")) {
                 ABBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
+                String noOfSeats[] = {"0"};
+                ABSeatsSpinner.setModel(new SpinnerListModel(noOfSeats));
+                ABSeatsSpinner.getModel().setValue(noOfSeats[0]);
+
+                String reservation = (String) ABBookingDropdown.getModel().getSelectedItem();
+                if (!reservation.equals("")) {
+                    String data[] = reservation.split(",");
+                    String ABfilm = data[0].trim();
+                    String ABdate = data[1].trim();
+                    String ABtime = data[2].trim();
+                    String ABseats = data[3].trim();
+
+                    ABSeatsSpinner.setModel(new SpinnerListModel(server.getFilmDateTimeSeats(ABfilm, ABdate, ABtime)));
+                    ABSeatsSpinner.getModel().setValue(ABseats);
+                }
             } else if (name.endsWith("Delete Booking")) {
                 DBBookingDropdown.setModel(new DefaultComboBoxModel(server.getAllReservationsAsStrings(true)));
             }
             pane.repaint();
-        } else if (evt.getSource() instanceof JComboBox) {
-            JComboBox box = (JComboBox) evt.getSource();
-            System.out.println(box.getActionCommand());
         }
-
     }
 
     @Override

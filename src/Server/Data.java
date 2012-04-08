@@ -41,8 +41,7 @@ public class Data {
             while (it.hasNext()) {
                 Booking res = it.next();
                 if (res.getName().equals(customerName)) {
-                    boolean add = r.add(res);
-                    System.out.println(add);
+                    r.add(res);
                 }
             }
             if (r.size() > 0) {
@@ -80,11 +79,13 @@ public class Data {
                 f.book(no);
                 Booking b = new Booking(customer, f, no);
                 reservations.add(b);
+                
+                if (f.space() == 0) {
+                    urgent.send(film + " is now fully booked at " + date + " " + time);
+                }
+                
                 return true;
             }
-        }
-        if(f.space()==0){
-            urgent.send(film + " is now fully booked at " + date + " " + time);
         }
         return false;
     }
@@ -103,7 +104,7 @@ public class Data {
         int s = f.space();
         f.free(no);
         if (s == 0) {
-            urgent.send(film + "now has " + f.space() + " seats available at " + date + " " + time);
+            urgent.send(film + " now has " + f.space() + " seats available at " + date + " " + time);
         }
 
     }

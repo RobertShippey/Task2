@@ -17,6 +17,10 @@ public class Response implements Serializable {
     private boolean success;
     private String reason;
     
+    public Response(){
+        this.reason = "Something bad happened"; //to be overwritten with "success" or a fail reason
+    }
+    
     public void setResponse(String r){ this.response = r; }
     public void setSuccess(boolean s){ this.success = s; }
     public String getResponse() { return this.response;}

@@ -46,7 +46,7 @@ class Session extends Thread {
             _ip.setSoTimeout(Server.TIMEOUT_BLOCK);
             _name = (String) in.readObject();
             this.setName(_name + ":Thread");
-            server.log.writeError("Connected: " + _name, true);
+            server.log.writeEvent("Connected: " + _name, false);
             if (server.addUser(_name)) {
                 out.writeObject(null);
             } else {
@@ -155,17 +155,21 @@ class Session extends Thread {
                         r.setReason("No dates found for the specified film at the specified time.");
                     } 
                 } else if (command.equals(Request.FILM_DATE_TIME_SEATS)) {
-                    String[] seatsStrings = new String[data.findFilm(film, date, time).space()];
-                    if (seatsStrings != null) {
+                    String[] seatsStrings;
+                    if(data.findFilm(film, date, time).space() == 0){
+                        seatsStrings = new String[data.findFilm(film, date, time).getCapacity()];
                         for (int x = 0; x < seatsStrings.length; x++) {
                             seatsStrings[x] = Integer.toString(x + 1);
                         }
-                        r.setResponseObjects(seatsStrings);
-                        r.setSuccess(true);
                     } else {
-                        r.setSuccess(false);
-                        r.setReason("No seats available.");
+                        seatsStrings = new String[data.findFilm(film, date, time).space()];
+                        for (int x = 0; x < seatsStrings.length; x++) {
+                            seatsStrings[x] = Integer.toString(x + 1);
+                        }
                     }
+
+                    r.setResponseObjects(seatsStrings);
+                    r.setSuccess(true);
                 }else if (command.equals(Request.LOG_OFF)) {
                     server.removeClient(this);
                     quit = true;

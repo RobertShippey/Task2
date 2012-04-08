@@ -54,16 +54,16 @@ public class Film implements Serializable{
     }
     
     public boolean book(int c){
-        if(this.booked-c < 0){
+        if(this.space()-c < 0){
             return false;
         } else {
-            this.booked -= c;
+            this.booked += c;
             return true;
         }
     }
     
     public void free(int c){
-        this.booked += c;
+        this.booked -= c;
     }
     
     @Override
