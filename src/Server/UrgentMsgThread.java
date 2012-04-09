@@ -14,15 +14,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
+ * The thread that deals with urgent messages.
  * @author Robert
  */
-class UrgentMsgThread extends Thread {
+public class UrgentMsgThread extends Thread {
 
     private Server server;
     private ServerSocket s;
     private List<Socket> clients;
 
+    /**
+     * constructs a new urgent message thread ready to be started
+     * @param server the server's instance
+     */
     public UrgentMsgThread(Server server) {
         this.setName("URGNT Thread");
         this.server = server;
@@ -35,6 +39,9 @@ class UrgentMsgThread extends Thread {
         clients = Collections.synchronizedList(new LinkedList<Socket>());
     }
 
+    /**
+     * Gets new connections
+     */
     @Override
     public void run() {
         if (s == null) {
@@ -52,6 +59,10 @@ class UrgentMsgThread extends Thread {
         }
     }
 
+    /**
+     * Send an urgent message to all clients.
+     * @param msg message to send to all clients
+     */
     public synchronized void send(String msg) {
             Object[] socs = null;
             try{
@@ -64,6 +75,9 @@ class UrgentMsgThread extends Thread {
         
     }
 
+    /**
+     * Urgent message sender thread
+     */
     class UMSender extends Thread {
 
         private Object[] clients;

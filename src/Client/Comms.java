@@ -14,10 +14,10 @@ import shared.Request;
 import shared.Response;
 
 /**
- *
+ * The clients communication with the 
  * @author Robert
  */
-class Comms{
+public class Comms{
     
     private static final String LOG_OFF = "LOGOFF";
     
@@ -27,12 +27,21 @@ class Comms{
     private String user;
     private Booking[] reservations;
 
+    /**
+     * Create a new session with the server
+     * @param host ip address of the server
+     * @throws IOException can't connect to the server
+     */
     public Comms(String host) throws IOException {
         server = new Socket(host, 2000);
         in = new ObjectInputStream(server.getInputStream());
         out = new ObjectOutputStream(server.getOutputStream());
     }
 
+    /**
+     * Log on to the server
+     * @param name the users name
+     */
     public void logon(String name) {
         user = name;
         try {
@@ -52,6 +61,9 @@ class Comms{
         }
     }
     
+    /**
+     * Log off, disconnect the session with the server.
+     */
     public void logoff(){
         try{
         out.writeObject(new Request(LOG_OFF));
@@ -61,6 +73,10 @@ class Comms{
         } catch (IOException e){ }
     }
     
+    /**
+     * Get how long the reservations array is
+     * @return reservations.length
+     */
     public int getReservationsLength(){
         if(reservations==null){
             return 0;
@@ -68,7 +84,13 @@ class Comms{
         return reservations.length;
     }
     
-    public Booking getReservation(final int i){
+    /**
+     * Get a specific reservation
+     * @param i the index of the reservation
+     * @return the reservation indexed by i
+     * @throws ArrayIndexOutOfBoundsException 
+     */
+    public Booking getReservation(final int i)throws ArrayIndexOutOfBoundsException{
         if(i >= reservations.length || i<0){
             throw new ArrayIndexOutOfBoundsException("Out of bounds. Use getReservationLength.");
         } else {
@@ -76,6 +98,11 @@ class Comms{
         }
     }
     
+    /**
+     * Get local or remote reservations that are owned by this user and format them in a comma seperated format.
+     * @param refresh use true to get new data from the server, false to use local cache
+     * @return all reservations as Strings.
+     */
     public String[] getAllReservationsAsStrings(boolean refresh) {
         if (refresh) {
             Request r = new Request(Request.MY_RESERVATIONS);
@@ -94,6 +121,10 @@ class Comms{
         return getAllReservationsAsStrings();
     }
     
+    /**
+     * Get local reservations formatted as comma separated Strings
+     * @return all reservations as Strings
+     */
     public String[] getAllReservationsAsStrings(){
         if(reservations==null){
             String[] r = {""};
@@ -106,6 +137,12 @@ class Comms{
         return r;
     }
     
+    /**
+     * Sends a Request object to the server. Ensure that it was constructed with a static string from Request.
+     * This will return null if any exception is catched.
+     * @param r the request
+     * @return the Response object created by the server or null.
+     */
     public Response sendRequest(Request r){
       try{
           r.setName(user);
@@ -118,6 +155,10 @@ class Comms{
      
     }
     
+    /**
+     * Get all film names from the server
+     * @return Film names as Strings
+     */
     public String[] getFilmNames(){
         Request r = new Request(Request.FILMS);
         Response response = sendRequest(r);
@@ -128,7 +169,12 @@ class Comms{
         }
         return films;
     }
-
+    
+    /**
+     * Get, from the server, the dates of the films with the name passed in
+     * @param film the film name
+     * @return Strings of dates
+     */
     String[] getFilmDates(String film) {
         Request req = new Request(Request.FILM_DATES);
         req.setFilm(film);
@@ -142,6 +188,12 @@ class Comms{
         return r;
     }
 
+    /**
+     * Get, from the server, the times of the specified film on the specified date.
+     * @param film the film name
+     * @param date the film date
+     * @return String of times
+     */
     String[] getFilmDateTimes(String film, String date) {
         Request req = new Request (Request.FILM_DATE_TIMES);
         req.setFilm(film);
@@ -162,6 +214,14 @@ class Comms{
         
     }
 
+    /**
+     * Gets, from the server, an array of seats. If the film is fully booked it will return 0 to capacity.
+     * If the film is not fully booked it will return 0 to space.
+     * @param film the film name
+     * @param date the film date
+     * @param time the film time
+     * @return the seats as Strings
+     */
     String[] getFilmDateTimeSeats(String film, String date, String time) {
         Request req = new Request(Request.FILM_DATE_TIME_SEATS);
         req.setFilm(film);
@@ -181,6 +241,12 @@ class Comms{
         return r;
     }
     
+    /**
+     * Removes duplicated (based on the string value of the objects) of any Object array.
+     * Used for removing duplications in the dropdown boxes.
+     * @param objs any object array
+     * @return a new Object array with no duplications
+     */
     private Object[] removeDuplicates(final Object[] objs){
         if(objs == null || objs.length==0) { return null; }
         int count = 1;

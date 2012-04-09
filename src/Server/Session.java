@@ -16,10 +16,10 @@ import shared.Request;
 import shared.Response;
 
 /**
- *
+ * The client's threaded session with the server
  * @author Robert
  */
-class Session extends Thread {
+public class Session extends Thread {
 
     private Server server;
     private Data data;
@@ -30,6 +30,12 @@ class Session extends Thread {
     private LinkedList<Booking> reservations;
     private boolean quit;
 
+    /**
+     * Creates a session ready for the thread to be started.
+     * @param ip a socket to the client
+     * @param s the instance of the server
+     * @throws IOException if any setup error occurs
+     */
     public Session(Socket ip, Server s) throws IOException {
         server = s;
         data = server.getData();
@@ -40,6 +46,10 @@ class Session extends Thread {
         reservations = new LinkedList<Booking>();
     }
 
+    /**
+     * Loop of interaction with the server.
+     * Parse requests, process data, write back a response.
+     */
     @Override
     synchronized public void run() {
         try {
@@ -187,10 +197,17 @@ class Session extends Thread {
         }
     }
 
+    /**
+     * Is the session connected?
+     * @return if the session is connected
+     */
     public boolean isConnected() {
         return !quit;
     }
 
+    /**
+     * Close the socket.
+     */
     public synchronized void forceQuit() {
         try {
             _ip.close();
