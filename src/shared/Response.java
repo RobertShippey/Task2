@@ -51,7 +51,7 @@ public class Response implements Serializable {
 
     /**
      * Setter for an object array. This will be the payload for any response.
-     * @param o 
+     * @param o Any array that can be cast as Object
      */
     public void setResponseObjects(Object[] o) {
         this.object = o;
@@ -60,7 +60,8 @@ public class Response implements Serializable {
     /**
      * Getter for the object array. This is the payload from the server.
      * This should be parsed out as what ever objects are expected.
-     * @return 
+     * Could be of any length and any class type.
+     * @return the object array from the server
      */
     public Object[] getResponseObjects() {
         return this.object;
