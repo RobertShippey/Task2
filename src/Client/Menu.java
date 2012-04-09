@@ -273,7 +273,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
     public void windowIconified(WindowEvent we) {}
 
     /**
-     * 
+     * Not implemented.
      * @param we 
      */
     @Override
