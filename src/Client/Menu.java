@@ -16,6 +16,10 @@ import javax.swing.event.ChangeListener;
 import shared.Request;
 import shared.Response;
 
+/**
+ * The main menu GUI
+ * @author Robert and Nathan
+ */
 public class Menu extends JFrame implements WindowListener, ActionListener, ChangeListener, ItemListener{
     private static final long serialVersionUID = 1L;
     private final Comms server;
@@ -30,6 +34,10 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
     private JComboBox DBBookingDropdown;
     private final JTabbedPane tabbedGUI;
 
+    /**
+     * Constructs a menu.
+     * @param s the instance that deals with this session on the server
+     */
    public Menu(Comms s) {
         
       super("Client GUI");
@@ -224,9 +232,17 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         setSize(450, 220);
     }
    
+   /**
+    * Not implemented.
+    * @param we 
+    */
    @Override
     public void windowOpened(WindowEvent we) {}
 
+   /**
+    * Logs off the server, disposes of this window and creates a new instance of Login.
+    * @param we 
+    */
     @Override
     public void windowClosing(WindowEvent we) {
         server.logoff();
@@ -242,21 +258,45 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         
     }
 
+    /**
+     * Not implemented.
+     * @param we 
+     */
     @Override
     public void windowClosed(WindowEvent we) {}
 
+    /**
+     * Not implemented.
+     * @param we 
+     */
     @Override
     public void windowIconified(WindowEvent we) {}
 
+    /**
+     * 
+     * @param we 
+     */
     @Override
     public void windowDeiconified(WindowEvent we) {}
 
+    /**
+     * Not implemented.
+     * @param we 
+     */
     @Override
     public void windowActivated(WindowEvent we) {}
 
+    /**
+     * Not implemented.
+     * @param we 
+     */
     @Override
     public void windowDeactivated(WindowEvent we) {}
 
+    /**
+     * Performs the actions for submit/refresh buttons on each tab.
+     * @param e 
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
@@ -376,7 +416,10 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         }
     }
     
-    
+    /**
+     * Refreshes data on the selected tab after changing tab.
+     * @param evt 
+     */
     @Override
     public void stateChanged(ChangeEvent evt) {
         if (evt.getSource() instanceof JTabbedPane) {
@@ -410,6 +453,10 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
         }
     }
 
+    /**
+     * Refreshes the next dropdown box when one has been changed.
+     * @param ie 
+     */
     @Override
     public void itemStateChanged(ItemEvent ie) {
         JComboBox box = (JComboBox) ie.getSource();

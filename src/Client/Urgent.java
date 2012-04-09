@@ -21,7 +21,7 @@ import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 /**
- *
+ *The threaded window that listens for urgent messages from the server and updates the text box accordingly.
  * @author Robert
  */
 public class Urgent extends JFrame implements Runnable, ActionListener {
@@ -30,6 +30,9 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
     private boolean quit;
     private JTextArea msgs;
 
+    /**
+     * Constructs the window and sets up the server connections.
+     */
     public Urgent(){
         try{
             Socket s = new Socket("localhost", 2001);
@@ -62,6 +65,9 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
         this.pack();
     }
     
+    /**
+     * Listens for messages and updates the text box.
+     */
     @Override
     public void run() {
         this.setVisible(true);
@@ -82,15 +88,25 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
        //stuff
     }
     
+    /**
+     * Starts a new thread from this instance of runnable.
+     */
     public void start(){
         Thread t = new Thread(this);
         t.start();
     }
     
+    /**
+     * Sets the quit flag to tell the thread to finish.
+     */
     public void stop(){
         this.quit = true;
     }
 
+    /**
+     * Listens for the 'Hide' button to be presses and sets the window to invisible when pressed.
+     * @param ae 
+     */
     @Override
     public void actionPerformed(ActionEvent ae) {
         this.setVisible(false);

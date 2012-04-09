@@ -19,12 +19,18 @@ import shared.Booking;
 import shared.Film;
 
 /**
- *
+ *The server's entry point and core server functionality
  * @author Robert
  */
 public class Server {
     
+    /**
+     * A non-blocking timeout constant for use in the server
+     */
     public static final int TIMEOUT = 10;
+    /**
+     * A blocking timeout for the server.
+     */
     public static final int TIMEOUT_BLOCK = 0;
     //private LinkedList<Showing> _showings;
     private Data data;
@@ -34,6 +40,10 @@ public class Server {
     private List<String> users;
     private String[] offers;
 
+    /**
+     * Entry point for the server
+     * @param args 
+     */
     public static void main(String[] args) {
         Server server = new Server();
         File films = new File("data/films.txt");
@@ -77,10 +87,19 @@ public class Server {
 
         server.log.writeEvent("Shutdown", true);
     }
+    /**
+     * The instance of the urgent message thread. Should only be used for .send(message)
+     */
     public final UrgentMsgThread urgent;
     private final CmdThread cmd;
+    /**
+     * The instance of the log file writer. Should only be used to write messages/errors/events
+     */
     public final Log log;
 
+    /**
+     * Constructs a new server instance
+     */
     public Server() {
         log = new Log();
         log.writeEvent("Started", false);
@@ -98,6 +117,13 @@ public class Server {
         data = new Data(urgent);
     }
 
+    /**
+     * Reads the parameter files into the internal data structures
+     * @param f Films file
+     * @param r Reservations file
+     * @param u Users file
+     * @param s Special Offers file
+     */
     public void readFile(File f, File r, File u, File s) {
         LinkedList<Booking> bll = new LinkedList<Booking>();
         LinkedList<String> ull = new LinkedList<String>();
@@ -172,6 +198,12 @@ public class Server {
         data.offers = ofrs;
     }
 
+    /**
+     * Writes the internal data out the the parameter files in (rough) CSV format.
+     * @param ff films file
+     * @param rf reservations file
+     * @param uf users file
+     */
     public void writeFile(File ff, File rf, File uf) {
         try {
             FileOutputStream fos = new FileOutputStream(ff);
@@ -183,7 +215,7 @@ public class Server {
             fos.close();
             
             fos = new FileOutputStream(rf);
-            Iterator<Booking> bit = data.getBookingItt();
+            Iterator<Booking> bit = data.getBookingIt();
             while(bit.hasNext()){
                 Booking b = bit.next();
                 String res = b.getFilm().getName() + "," + b.getFilm().getDate() + "," + b.getFilm().getTime() + "," + b.getFilm().getBooked() + "," + b.getSeats() + "," + b.getName() + "\n";
@@ -208,10 +240,10 @@ public class Server {
 
     }
 
-    /***
-     * Constructs Session and adds to linked list then starts Thread.
-     * 
-     * @param s Received from clients request to connect.
+    /**
+     * Constructs a new Session, adds it to the linked list and starts the session
+     * @param s A Socket to the client
+     * @throws IOException Couldn't add the client to the linked list
      */
     public void addClient(Socket s) throws IOException {
         synchronized (_clients) {
@@ -223,22 +255,25 @@ public class Server {
         }
     }
 
+    /**
+     * Force quits the session
+     * @param c the Session to remove
+     */
     public synchronized void removeClient(Session c) {
         c.forceQuit();
     }
 
-    /***
-     * 
-     * @return 
+    /**
+     * Is the server shutting down?
+     * @return true if it is, false if it's not
      */
     public synchronized boolean  quitting() {
         return _quit;
     }
 
-    /***
-     * 
-     * @param q 
-     * @return 
+    /**
+     * Set the server to quit (pass "q" in) or force quit (pass "f" in)
+     * @param q String indicating quit level
      */
     public synchronized void setQuit(String q) {
         if (q.equals("q")) {
@@ -250,10 +285,17 @@ public class Server {
         }
     }
 
+    /**
+     * Is the server force quitting?
+     * @return true if the server is force quitting, false if not
+     */
     public boolean forceQuitting() {
         return _forcequit;
     }
 
+    /**
+     * Blocks the server from shutting down until all clients are disconnected.
+     */
     public void waitOnClients() {
         log.writeMessage("Waiting for clients to disconnect", false);
         Object[] clients = null;
@@ -275,6 +317,9 @@ public class Server {
         }
     }
 
+    /**
+     * Closes the connection to all the clients, used for force quitting the server.
+     */
     public void closeAllClients() {
         log.writeMessage("Disconnecting all clients", false);
         synchronized (_clients) {
@@ -285,10 +330,19 @@ public class Server {
         }
     }
     
+    /**
+     * Gets the Data instance
+     * @return the instance of the Data class
+     */
     public Data getData(){
         return this.data;
     }
 
+    /**
+     * Adds users to the list if they're new
+     * @param user the user's name
+     * @return true if user is new, false if already registered
+     */
     public boolean addUser(String user) {
         synchronized (users) {
             if (users.contains(user)) {
@@ -300,6 +354,10 @@ public class Server {
         }
     }
     
+    /**
+     * Gets the Strings detailing the offers
+     * @return each offer as a String in the array
+     */
     public String[] getOffers(){
         return this.offers;
     }

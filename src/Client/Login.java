@@ -20,8 +20,8 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 /**
- *
- * @author Robert
+ * A Login GUI that connects to the server.
+ * @author Robert and Nathan
  */
 public class Login extends JFrame implements ActionListener, KeyListener {
 
@@ -32,6 +32,9 @@ public class Login extends JFrame implements ActionListener, KeyListener {
     private JTextField usernameText;
     private Comms server;
 
+    /**
+     * Creates a logging in GUI 
+     */
     public Login() {
        
         usernameLabel = new JLabel();
@@ -56,6 +59,10 @@ public class Login extends JFrame implements ActionListener, KeyListener {
         setVisible(true);
     }
 
+    /**
+     * Reads the name from the text box, logs into the server and then constructs a Menu instance.
+     * @param ae 
+     */
     @Override
     public void actionPerformed(ActionEvent ae) {
         try{
@@ -74,6 +81,10 @@ public class Login extends JFrame implements ActionListener, KeyListener {
       
     }
 
+    /**
+     * Listens for an enter key press, runs actionPerformed when it's found.
+     * @param ke 
+     */
     @Override
     public void keyReleased(KeyEvent ke) {
         if(ke.getKeyChar()=='\n'){
@@ -81,9 +92,17 @@ public class Login extends JFrame implements ActionListener, KeyListener {
         }
     }
 
+    /**
+     * Not implemented.
+     * @param ke 
+     */
     @Override
     public void keyTyped(KeyEvent ke) {}
 
+    /**
+     * Not implemented.
+     * @param ke 
+     */
     @Override
     public void keyPressed(KeyEvent ke) {}
 }
