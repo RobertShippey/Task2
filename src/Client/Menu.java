@@ -38,6 +38,8 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
      * Constructs a menu.
      * @param s the instance that deals with this session on the server
      */
+    
+
    public Menu(Comms s) {
         
       super("Client GUI");
@@ -49,6 +51,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
 
        tabbedGUI = new JTabbedPane();
        tabbedGUI.addChangeListener(this);
+       
 
        // Pane 1
 

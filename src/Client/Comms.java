@@ -19,8 +19,6 @@ import shared.Response;
  */
 public class Comms{
     
-    private static final String LOG_OFF = "LOGOFF";
-    
     private Socket server;
     private ObjectInputStream in;
     private ObjectOutputStream out;
@@ -34,6 +32,7 @@ public class Comms{
      */
     public Comms(String host) throws IOException {
         server = new Socket(host, 2000);
+        server.setSoTimeout(0);
         in = new ObjectInputStream(server.getInputStream());
         out = new ObjectOutputStream(server.getOutputStream());
     }
@@ -64,13 +63,16 @@ public class Comms{
     /**
      * Log off, disconnect the session with the server.
      */
-    public void logoff(){
-        try{
-        out.writeObject(new Request(LOG_OFF));
-        in.close();
-        out.close();
-        server.close();
-        } catch (IOException e){ }
+    public void logoff() {
+        try {
+            out.writeObject(new Request(Request.LOG_OFF));
+           Object x = in.readObject();
+            server.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        } catch (ClassNotFoundException cnf) {
+            System.err.println(cnf.getMessage());
+        }
     }
     
     /**

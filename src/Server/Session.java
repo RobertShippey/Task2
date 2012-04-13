@@ -68,7 +68,7 @@ public class Session extends Thread {
                     out.writeObject(null);
                 }
             }
-            _ip.setSoTimeout(Server.TIMEOUT);
+            //_ip.setSoTimeout(Server.TIMEOUT);
         } catch (IOException ex) {
             if(_name == null) {_name = "Unknown"; }
             server.log.writeError(_name + " session: " + ex.getMessage(), true);
@@ -183,7 +183,6 @@ public class Session extends Thread {
                 }else if (command.equals(Request.LOG_OFF)) {
                     server.removeClient(this);
                     quit = true;
-                    return;
                 } else {
                     r.setSuccess(false);
                     r.setReason("Command not understood by the server");
@@ -191,6 +190,7 @@ public class Session extends Thread {
 
                 out.writeObject(r);
             } catch (IOException e) {
+                System.err.println(e.getMessage());
             } catch (ClassNotFoundException cnf) {
                 server.log.writeError(_name + " session: " + cnf.getMessage(), true);
             }

@@ -259,8 +259,8 @@ public class Server {
      * Force quits the session
      * @param c the Session to remove
      */
-    public synchronized void removeClient(Session c) {
-        c.forceQuit();
+    public void removeClient(Session c) {
+       synchronized(_clients){ this._clients.remove(c); }
     }
 
     /**
