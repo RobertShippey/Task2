@@ -143,7 +143,7 @@ public class Data {
         Booking[] b = getReservations(customer);
         synchronized (reservations) {
             for (int x = 0; x < b.length; x++) {
-                if (b[x].getFilm() == f) {
+                if ((b[x].getFilm() == f) && (b[x].getSeats() == no)) {
                     reservations.remove(b[x]);
                 }
 
