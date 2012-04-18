@@ -23,8 +23,8 @@ public class Session extends Thread {
 
     private Server server;
     private Data data;
-    private String _name;
-    private Socket _ip;
+    private String name;
+    private Socket IP;
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private LinkedList<Booking> reservations;
@@ -39,9 +39,9 @@ public class Session extends Thread {
     public Session(Socket ip, Server s) throws IOException {
         server = s;
         data = server.getData();
-        _ip = ip;
-        out = new ObjectOutputStream(_ip.getOutputStream());
-        in = new ObjectInputStream(_ip.getInputStream());
+        IP = ip;
+        out = new ObjectOutputStream(IP.getOutputStream());
+        in = new ObjectInputStream(IP.getInputStream());
         quit = false;
         reservations = new LinkedList<Booking>();
     }
@@ -53,14 +53,14 @@ public class Session extends Thread {
     @Override
     synchronized public void run() {
         try {
-            _ip.setSoTimeout(Server.TIMEOUT_BLOCK);
-            _name = (String) in.readObject();
-            this.setName(_name + ":Thread");
-            server.log.writeEvent("Connected: " + _name, false);
-            if (server.addUser(_name)) {
+            IP.setSoTimeout(Server.TIMEOUT_BLOCK);
+            name = (String) in.readObject();
+            this.setName(name + ":Thread");
+            server.log.writeEvent("Connected: " + name, false);
+            if (server.addUser(name)) {
                 out.writeObject(null);
             } else {
-                Booking[] b = data.getReservations(_name);
+                Booking[] b = data.getReservations(name);
                 if (b != null) {
                     reservations.addAll(Arrays.asList(b));
                     out.writeObject(reservations.toArray());
@@ -70,12 +70,12 @@ public class Session extends Thread {
             }
             //_ip.setSoTimeout(Server.TIMEOUT);
         } catch (IOException ex) {
-            if(_name == null) {_name = "Unknown"; }
-            server.log.writeError(_name + " session: " + ex.getMessage(), true);
+            if(name == null) {name = "Unknown"; }
+            server.log.writeError(name + " session: " + ex.getMessage(), true);
             return;
         } catch (ClassNotFoundException ex) {
-            if(_name == null) {_name = "Unknown"; }
-            server.log.writeError(_name + " session: " + ex.getMessage(), true);
+            if(name == null) {name = "Unknown"; }
+            server.log.writeError(name + " session: " + ex.getMessage(), true);
             return;
         }
 
@@ -84,7 +84,7 @@ public class Session extends Thread {
                 Request req = (Request) in.readObject();
 
                 String command = req.getRequest();
-                server.log.writeEvent(_name + " session: requested " + command, false);
+                server.log.writeEvent(name + " session: requested " + command, false);
                 
                 String name = req.getName();
                 String film = req.getFilm();
@@ -122,7 +122,7 @@ public class Session extends Thread {
                         r.setSuccess(true);
                     }
                 } else if (command.equals(Request.MY_RESERVATIONS)) {
-                    Booking[] b = data.getReservations(_name);
+                    Booking[] b = data.getReservations(this.name);
                     if (b != null) {
                         r.setSuccess(true);
                         r.setResponseObjects(b);
@@ -191,9 +191,9 @@ public class Session extends Thread {
 
                 out.writeObject(r);
             } catch (IOException e) {
-               server.log.writeError(_name + " session: " + e.getMessage(), true);
+               server.log.writeError(name + " session: " + e.getMessage(), true);
             } catch (ClassNotFoundException cnf) {
-                server.log.writeError(_name + " session: " + cnf.getMessage(), true);
+                server.log.writeError(name + " session: " + cnf.getMessage(), true);
             }
         }
     }
@@ -211,9 +211,9 @@ public class Session extends Thread {
      */
     public synchronized void forceQuit() {
         try {
-            _ip.close();
+            IP.close();
         } catch (IOException e) {
-            server.log.writeError(_name + " session: ", false);
+            server.log.writeError(name + " session: ", false);
         }
     }
 }

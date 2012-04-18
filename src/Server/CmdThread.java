@@ -12,19 +12,16 @@ import java.io.InputStreamReader;
  * @author Robert and Nathan
  */
 public class CmdThread extends Thread {
-    private Server _s;
-    private boolean q = false;
-    private UrgentMsgThread _t;
+    private Server server;
+    private boolean quit = false;
     
     /**
      * Constructs and instance.
      * @param s instance of the server
-     * @param t instance of the Urgent Message Thread
      */
-    public CmdThread(Server s, UrgentMsgThread t){
+    public CmdThread(Server s){
         this.setName("CMDThread");
-        _t = t;
-        _s = s;
+        server = s;
     }
     
     /**
@@ -34,17 +31,17 @@ public class CmdThread extends Thread {
     synchronized public void run() {
         InputStreamReader in = new InputStreamReader(System.in);
         int c;
-        while(!q){
+        while(!quit){
             try{
             c = in.read();}
             catch (IOException e){ continue;}
             if(c == (int)'q'){
-                q = true;
-                _s.setQuit("q");
+                quit = true;
+                server.setQuit("q");
             }
             if(c == (int)'f'){
-                q = true;
-                _s.setQuit("f");
+                quit = true;
+                server.setQuit("f");
             }
         } 
     }

@@ -12,8 +12,8 @@ import java.io.Serializable;
  */
 public class Booking implements Serializable {
     private static final long serialVersionUID = 1L;
-    private String _customerName;
-    private Film _film;
+    private String customerName;
+    private Film film;
     private int seats;
     
     /**
@@ -23,8 +23,8 @@ public class Booking implements Serializable {
      * @param no the number of seats
      */
     public Booking(String name, Film film, int no) {
-        this._customerName = name;
-        this._film = film;
+        this.customerName = name;
+        this.film = film;
         this.seats = no;
     }
         
@@ -33,7 +33,7 @@ public class Booking implements Serializable {
      * @return the customer's name
      */
     public String getName(){
-        return _customerName;
+        return customerName;
     }
     
     /**
@@ -41,7 +41,7 @@ public class Booking implements Serializable {
      * @return a Film object
      */
     public Film getFilm(){
-        return this._film;
+        return this.film;
     }
     
     /**

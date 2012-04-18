@@ -26,7 +26,9 @@ public class Log {
     public Log() {
         try {
             logfile = new File("logs/" + getTime() + ".log");
-            if(!logfile.getParentFile().exists()) { logfile.getParentFile().mkdir(); }
+            if (!logfile.getParentFile().exists()) {
+                logfile.getParentFile().mkdir();
+            }
             log = new FileWriter(logfile);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -54,7 +56,9 @@ public class Log {
     public boolean writeMessage(String msg, boolean stdout) {
         try {
             String message = getTime() + ":: " + msg + "\n";
-            if(stdout){ System.out.print(message); }
+            if (stdout) {
+                System.out.print(message);
+            }
             log.write(message);
             log.flush();
             return true;

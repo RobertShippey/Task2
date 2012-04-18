@@ -26,7 +26,7 @@ import javax.swing.WindowConstants;
 public class Login extends JFrame implements ActionListener, KeyListener {
 
     private static final long serialVersionUID = 1L;
-    private JButton SUBMIT;
+    private JButton submit;
     private JPanel panel;
     private JLabel usernameLabel;
     private JTextField usernameText;
@@ -36,21 +36,21 @@ public class Login extends JFrame implements ActionListener, KeyListener {
      * Creates a logging in GUI 
      */
     public Login() {
-       
+
         usernameLabel = new JLabel();
         usernameLabel.setText("Username:");
         usernameText = new JTextField(15);
         usernameText.addKeyListener(this);
 
-        SUBMIT = new JButton("SUBMIT");
+        submit = new JButton("SUBMIT");
 
         panel = new JPanel(new GridLayout(3, 1));
         panel.add(usernameLabel);
         panel.add(usernameText);
-        panel.add(SUBMIT);
+        panel.add(submit);
 
         add(panel, BorderLayout.CENTER);
-        SUBMIT.addActionListener(this);
+        submit.addActionListener(this);
         setTitle("LOGIN FORM");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -65,20 +65,20 @@ public class Login extends JFrame implements ActionListener, KeyListener {
      */
     @Override
     public void actionPerformed(ActionEvent ae) {
-        try{
-        server = new Comms();
-        } catch (IOException e){
+        try {
+            server = new Comms();
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
             System.exit(0);
         }
         String name = usernameText.getText();
         server.logon(name);
-                
+
         Menu page = new Menu(server);
         this.setVisible(false);
         page.setVisible(true);
         this.dispose();
-      
+
     }
 
     /**
@@ -87,7 +87,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
      */
     @Override
     public void keyReleased(KeyEvent ke) {
-        if(ke.getKeyChar()=='\n'){
+        if (ke.getKeyChar() == '\n') {
             actionPerformed(null);
         }
     }
@@ -97,12 +97,14 @@ public class Login extends JFrame implements ActionListener, KeyListener {
      * @param ke 
      */
     @Override
-    public void keyTyped(KeyEvent ke) {}
+    public void keyTyped(KeyEvent ke) {
+    }
 
     /**
      * Not implemented.
      * @param ke 
      */
     @Override
-    public void keyPressed(KeyEvent ke) {}
+    public void keyPressed(KeyEvent ke) {
+    }
 }

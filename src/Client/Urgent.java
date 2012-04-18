@@ -25,6 +25,7 @@ import javax.swing.WindowConstants;
  * @author Robert
  */
 public class Urgent extends JFrame implements Runnable, ActionListener {
+
     private static final long serialVersionUID = 1L;
     private BufferedReader MsgServer;
     private boolean quit;
@@ -33,27 +34,27 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
     /**
      * Constructs the window and sets up the server connections.
      */
-    public Urgent(){
-        try{
+    public Urgent() {
+        try {
             Socket s = new Socket("localhost", 2001);
             s.setSoTimeout(5);
-        MsgServer = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        
-        } catch (IOException e){
+            MsgServer = new BufferedReader(new InputStreamReader(s.getInputStream()));
+
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
             System.exit(0);
         }
-        
+
         quit = false;
         JLabel lbl1 = new JLabel("Urgent Messages:");
         msgs = new JTextArea();
         msgs.setEditable(false);
         msgs.setText("");
-        msgs.setPreferredSize(new Dimension(200,200));
+        msgs.setPreferredSize(new Dimension(200, 200));
         JButton hideBtn = new JButton("Hide");
         Container panel = this.getContentPane();
-        
-        panel.add(lbl1,BorderLayout.PAGE_START);
+
+        panel.add(lbl1, BorderLayout.PAGE_START);
         panel.add(msgs, BorderLayout.CENTER);
         panel.add(hideBtn, BorderLayout.PAGE_END);
 
@@ -64,42 +65,42 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
         setSize(200, 250);
         this.pack();
     }
-    
+
     /**
      * Listens for messages and updates the text box.
      */
     @Override
     public void run() {
         this.setVisible(true);
-        while(!quit){
+        while (!quit) {
             String m = msgs.getText();
             String n = null;
             try {
-            n = MsgServer.readLine();
-            } catch (IOException e){
+                n = MsgServer.readLine();
+            } catch (IOException e) {
                 continue;
             }
-            if(n!=null){
-            msgs.setText(n + "\n" + m);
-            this.setVisible(true);
+            if (n != null) {
+                msgs.setText(n + "\n" + m);
+                this.setVisible(true);
             }
         }
         this.dispose();
-       //stuff
+        //stuff
     }
-    
+
     /**
      * Starts a new thread from this instance of runnable.
      */
-    public void start(){
+    public void start() {
         Thread t = new Thread(this);
         t.start();
     }
-    
+
     /**
      * Sets the quit flag to tell the thread to finish.
      */
-    public void stop(){
+    public void stop() {
         this.quit = true;
     }
 

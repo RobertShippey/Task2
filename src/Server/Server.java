@@ -35,8 +35,8 @@ public class Server {
     //private LinkedList<Showing> _showings;
     private Data data;
     private List<Session> _clients;
-    private boolean _quit;
-    private boolean _forcequit;
+    private boolean quit;
+    private boolean forcequit;
     private List<String> users;
     private String[] offers;
 
@@ -105,13 +105,13 @@ public class Server {
         log.writeEvent("Started", false);
         _clients = Collections.synchronizedList(new LinkedList<Session>());
         users = Collections.synchronizedList(new LinkedList<String>());
-        _quit = false;
-        _forcequit = false;
+        quit = false;
+        forcequit = false;
         
         urgent = new UrgentMsgThread(this);
         urgent.start();
         
-        cmd = new CmdThread(this, urgent);
+        cmd = new CmdThread(this);
         cmd.start();
         
         data = new Data(urgent);
@@ -154,7 +154,9 @@ public class Server {
                 if (!film[0].equals("")) {
                     for (int x = 0; x < film.length; x++) {
                         String[] items = film[x].split(",");
-                        fl[x] = new Film(items[0], items[1], items[2], Integer.parseInt(items[3]), Integer.parseInt(items[4]));
+                        fl[x] = new Film(items[0], items[1], 
+                                items[2], Integer.parseInt(items[3]), 
+                                Integer.parseInt(items[4]));
                     }
                 } else {
                     fl = null;
@@ -175,7 +177,8 @@ public class Server {
                 if(!records[0].equals("")){
                 for (int x = 0; x < records.length; x++) {
                     String[] row = records[x].split(",");
-                    Booking b = new Booking(row[5], data.findFilm(row[0], row[1], row[2]), Integer.parseInt(row[4]));
+                    Booking b = new Booking(row[5], data.findFilm(row[0], 
+                            row[1], row[2]), Integer.parseInt(row[4]));
                     bll.add(b);
                 }}
                 fis.close();
@@ -218,7 +221,12 @@ public class Server {
             Iterator<Booking> bit = data.getBookingIt();
             while(bit.hasNext()){
                 Booking b = bit.next();
-                String res = b.getFilm().getName() + "," + b.getFilm().getDate() + "," + b.getFilm().getTime() + "," + b.getFilm().getBooked() + "," + b.getSeats() + "," + b.getName() + "\n";
+                String res = b.getFilm().getName() + "," 
+                        + b.getFilm().getDate() + "," 
+                        + b.getFilm().getTime() 
+                        + "," + b.getFilm().getBooked() 
+                        + "," + b.getSeats() 
+                        + "," + b.getName() + "\n";
                 fos.write(res.getBytes());
             }
             fos.close();
@@ -269,7 +277,7 @@ public class Server {
      * @return true if it is, false if it's not
      */
     public synchronized boolean  quitting() {
-        return _quit;
+        return quit;
     }
 
     /**
@@ -278,11 +286,11 @@ public class Server {
      */
     public synchronized void setQuit(String q) {
         if (q.equals("q")) {
-            _quit = true;
+            quit = true;
         }
         if (q.equals("f")) {
-            _quit = true;
-            _forcequit = true;
+            quit = true;
+            forcequit = true;
         }
     }
 
@@ -291,7 +299,7 @@ public class Server {
      * @return true if the server is force quitting, false if not
      */
     public boolean forceQuitting() {
-        return _forcequit;
+        return forcequit;
     }
 
     /**

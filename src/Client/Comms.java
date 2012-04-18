@@ -17,8 +17,8 @@ import shared.Response;
  * The clients communication with the 
  * @author Robert
  */
-public class Comms{
-    
+public class Comms {
+
     private Socket server;
     private ObjectInputStream in;
     private ObjectOutputStream out;
@@ -27,7 +27,6 @@ public class Comms{
 
     /**
      * Create a new session with the server
-     * @param host ip address of the server
      * @throws IOException can't connect to the server
      */
     public Comms() throws IOException {
@@ -59,7 +58,7 @@ public class Comms{
         } catch (IOException ioe) {
         }
     }
-    
+
     /**
      * Log off, disconnect the session with the server.
      */
@@ -71,32 +70,32 @@ public class Comms{
             System.err.println(e.getMessage());
         }
     }
-    
+
     /**
      * Get how long the reservations array is
      * @return reservations.length
      */
-    public int getReservationsLength(){
-        if(reservations==null){
+    public int getReservationsLength() {
+        if (reservations == null) {
             return 0;
         }
         return reservations.length;
     }
-    
+
     /**
      * Get a specific reservation
      * @param i the index of the reservation
      * @return the reservation indexed by i
      * @throws ArrayIndexOutOfBoundsException 
      */
-    public Booking getReservation(final int i)throws ArrayIndexOutOfBoundsException{
-        if(i >= reservations.length || i<0){
+    public Booking getReservation(final int i) throws ArrayIndexOutOfBoundsException {
+        if (i >= reservations.length || i < 0) {
             throw new ArrayIndexOutOfBoundsException("Out of bounds. Use getReservationLength.");
         } else {
             return reservations[i];
         }
     }
-    
+
     /**
      * Get local or remote reservations that are owned by this user and format them in a comma seperated format.
      * @param refresh use true to get new data from the server, false to use local cache
@@ -107,7 +106,7 @@ public class Comms{
             Request r = new Request(Request.MY_RESERVATIONS);
             Response response = sendRequest(r);
             Object[] objs = response.getResponseObjects();
-            if(objs==null){
+            if (objs == null) {
                 String[] n = {""};
                 return n;
             }
@@ -119,56 +118,59 @@ public class Comms{
         }
         return getAllReservationsAsStrings();
     }
-    
+
     /**
      * Get local reservations formatted as comma separated Strings
      * @return all reservations as Strings
      */
-    public String[] getAllReservationsAsStrings(){
-        if(reservations==null){
+    public String[] getAllReservationsAsStrings() {
+        if (reservations == null) {
             String[] r = {""};
-           return r;
+            return r;
         }
-        String[] r = new String [reservations.length];
-        for (int x =0; x<r.length;x++){
-            r[x] = reservations[x].getFilm().getName() + ", " + reservations[x].getFilm().getDate() + ", " + reservations[x].getFilm().getTime() + ", " + reservations[x].getSeats();
+        String[] r = new String[reservations.length];
+        for (int x = 0; x < r.length; x++) {
+            r[x] = reservations[x].getFilm().getName() + ", " 
+                    + reservations[x].getFilm().getDate() + ", " 
+                    + reservations[x].getFilm().getTime() + ", " 
+                    + reservations[x].getSeats();
         }
         return r;
     }
-    
+
     /**
      * Sends a Request object to the server. Ensure that it was constructed with a static string from Request.
      * This will return null if any exception is catched.
      * @param r the request
      * @return the Response object created by the server or null.
      */
-    public Response sendRequest(Request r){
-      try{
-          r.setName(user);
-        out.writeObject(r);
-        return (Response) in.readObject();
-      } catch (Exception e){
-          JOptionPane.showMessageDialog(null, e.getMessage());
-      }
-     return null;
-     
+    public Response sendRequest(Request r) {
+        try {
+            r.setName(user);
+            out.writeObject(r);
+            return (Response) in.readObject();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        return null;
+
     }
-    
+
     /**
      * Get all film names from the server
      * @return Film names as Strings
      */
-    public String[] getFilmNames(){
+    public String[] getFilmNames() {
         Request r = new Request(Request.FILMS);
         Response response = sendRequest(r);
-        Object[] filmObjs =  removeDuplicates(response.getResponseObjects());
+        Object[] filmObjs = removeDuplicates(response.getResponseObjects());
         String[] films = new String[filmObjs.length];
-        for(int x =0; x<filmObjs.length;x++){
+        for (int x = 0; x < filmObjs.length; x++) {
             films[x] = (String) filmObjs[x];
         }
         return films;
     }
-    
+
     /**
      * Get, from the server, the dates of the films with the name passed in
      * @param film the film name
@@ -177,11 +179,11 @@ public class Comms{
     String[] getFilmDates(String film) {
         Request req = new Request(Request.FILM_DATES);
         req.setFilm(film);
-        
+
         Response response = sendRequest(req);
         Object[] obj = removeDuplicates(response.getResponseObjects());
         String[] r = new String[obj.length];
-        for(int x=0;x<obj.length;x++){
+        for (int x = 0; x < obj.length; x++) {
             r[x] = (String) obj[x];
         }
         return r;
@@ -194,23 +196,23 @@ public class Comms{
      * @return String of times
      */
     String[] getFilmDateTimes(String film, String date) {
-        Request req = new Request (Request.FILM_DATE_TIMES);
+        Request req = new Request(Request.FILM_DATE_TIMES);
         req.setFilm(film);
         req.setDate(date);
-        
+
         Response response = sendRequest(req);
         Object[] obj = removeDuplicates(response.getResponseObjects());
-        if(obj!=null){
-        String[] r = new String[obj.length];
-        for(int x=0;x<obj.length;x++){
-            r[x] = (String) obj[x];
-        }
-        return r;
+        if (obj != null) {
+            String[] r = new String[obj.length];
+            for (int x = 0; x < obj.length; x++) {
+                r[x] = (String) obj[x];
+            }
+            return r;
         } else {
             String[] n = {""};
             return n;
         }
-        
+
     }
 
     /**
@@ -226,50 +228,53 @@ public class Comms{
         req.setFilm(film);
         req.setDate(date);
         req.setTime(time);
-        
+
         Response response = sendRequest(req);
         Object[] obj = removeDuplicates(response.getResponseObjects());
-        if(obj==null){
+        if (obj == null) {
             String[] n = {""};
             return n;
         }
         String[] r = new String[obj.length];
-        for(int x=0;x<obj.length;x++){
+        for (int x = 0; x < obj.length; x++) {
             r[x] = (String) obj[x];
         }
         return r;
     }
-    
+
     /**
      * Removes duplicated (based on the string value of the objects) of any Object array.
      * Used for removing duplications in the dropdown boxes.
      * @param objs any object array
      * @return a new Object array with no duplications
      */
-    private Object[] removeDuplicates(final Object[] objs){
-        if(objs == null || objs.length==0) { return null; }
+    private Object[] removeDuplicates(final Object[] objs) {
+        if (objs == null || objs.length == 0) {
+            return null;
+        }
         int count = 1;
         boolean[] unique = new boolean[objs.length];
         unique[0] = true;
-        for(int x=1;x<objs.length;x++){
+        for (int x = 1; x < objs.length; x++) {
             unique[x] = true;
-            for(int y=0;y<x;y++){
-                if((objs[x].toString().equals(objs[y].toString()))){
+            for (int y = 0; y < x; y++) {
+                if ((objs[x].toString().equals(objs[y].toString()))) {
                     unique[x] = false;
                     break;
                 }
             }
-            if(unique[x]) { count++; }
+            if (unique[x]) {
+                count++;
+            }
         }
-        
+
         Object[] r = new Object[count];
-        int i=0;
-        for(int x=0;x<objs.length;x++){
-            if(unique[x]){
+        int i = 0;
+        for (int x = 0; x < objs.length; x++) {
+            if (unique[x]) {
                 r[i++] = objs[x];
             }
         }
         return r;
     }
-    
 }

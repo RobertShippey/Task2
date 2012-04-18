@@ -89,7 +89,8 @@ public class Data {
      */
     public synchronized Film findFilm(String name, String date, String time) {
             for(int x=0;x<films.length;x++){
-                if (films[x].getName().equals(name) && films[x].getDate().equals(date) && films[x].getTime().equals(time)) {
+                if (films[x].getName().equals(name) && films[x].getDate().equals(date) 
+                        && films[x].getTime().equals(time)) {
                     return films[x];
                 }
             }
@@ -105,7 +106,8 @@ public class Data {
      * @param no the number of seats 
      * @return true if made, false if couldn't make reservation
      */
-    public boolean makeReservation(String customer, String film, String date, String time, int no) {
+    public boolean makeReservation(String customer, String film, 
+            String date, String time, int no) {
         Film f = findFilm(film, date, time);
         if (f == null) {
             return false;
@@ -117,7 +119,8 @@ public class Data {
                 reservations.add(b);
                 
                 if (f.space() == 0) {
-                    urgent.send(film + " is now fully booked at " + date + " " + time);
+                    urgent.send(film + " is now fully booked at " 
+                            + date + " " + time);
                 }
                 
                 return true;
@@ -134,7 +137,8 @@ public class Data {
      * @param time the film time
      * @param no the number of seats
      */
-    public void cancelReservation(String customer, String film, String date, String time, int no) {
+    public void cancelReservation(String customer, String film, 
+            String date, String time, int no) {
         Film f = findFilm(film, date, time);
         Booking[] b = getReservations(customer);
         synchronized (reservations) {
@@ -148,7 +152,8 @@ public class Data {
         int s = f.space();
         f.free(no);
         if (s == 0) {
-            urgent.send(film + " now has " + f.space() + " seats available at " + date + " " + time);
+            urgent.send(film + " now has " + f.space() 
+                    + " seats available at " + date + " " + time);
         }
 
     }
@@ -163,7 +168,8 @@ public class Data {
      * @param newSeats the number of seats for the new reservation to have
      * @return true if able to make new booking and false if could not.
      */
-    public boolean changeReservation(String customer, String film, String date, String time, int oldSeats, int newSeats) {
+    public boolean changeReservation(String customer, String film, 
+            String date, String time, int oldSeats, int newSeats) {
         this.cancelReservation(customer, film, date, time, oldSeats);
         return this.makeReservation(customer, film, date, time, newSeats);
     }

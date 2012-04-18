@@ -20,7 +20,7 @@ import java.util.List;
 public class UrgentMsgThread extends Thread {
 
     private Server server;
-    private ServerSocket s;
+    private ServerSocket soc;
     private List<Socket> clients;
 
     /**
@@ -31,8 +31,8 @@ public class UrgentMsgThread extends Thread {
         this.setName("URGNT Thread");
         this.server = server;
         try {
-            s = new ServerSocket(2001);
-            s.setSoTimeout(Server.TIMEOUT);
+            soc = new ServerSocket(2001);
+            soc.setSoTimeout(Server.TIMEOUT);
         } catch (IOException e) {
             server.log.writeError("Urgent Messages: " + e.getMessage(), true);
         }
@@ -44,13 +44,13 @@ public class UrgentMsgThread extends Thread {
      */
     @Override
     public void run() {
-        if (s == null) {
+        if (soc == null) {
             return;
         }
         while (!server.quitting()) {
             Socket cl = null;
             try {
-                cl = s.accept();
+                cl = soc.accept();
             } catch (IOException e) {
                 continue;
             }

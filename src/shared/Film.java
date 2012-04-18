@@ -115,7 +115,8 @@ public class Film implements Serializable{
      */
     @Override
     public String toString(){
-        return this.name + "," + this.date + "," + this.time + "," + this.capacity + "," + this.booked;
+        return this.name + "," + this.date + "," 
+                + this.time + "," + this.capacity + "," + this.booked;
     }
 
     /**
