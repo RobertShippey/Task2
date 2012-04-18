@@ -12,16 +12,47 @@ import java.io.Serializable;
  */
 public class Request implements Serializable {
 
+    /**
+     * static field to be passed into the constructor of a new Request.
+     */
     public static final String LOG_OFF = "LOG_OFF";
+    /**
+     * static field to be passed into the constructor of a new Request.
+     */
     public static final String MAKE = "MAKE_RESERVATION";
+    /**
+     * static field to be passed into the constructor of a new Request.
+     */
     public static final String AMEND = "CHANGE_RESERVATON";
+    /**
+     * static field to be passed into the constructor of a new Request.
+     */
     public static final String DELETE = "DELETE_RESERVATION";
+    /**
+     * static field to be passed into the constructor of a new Request.
+     */
     public static final String REFRESH_OFFERS = "REFRESH_SPECIAL_OFFERS";
+    /**
+     * static field to be passed into the constructor of a new Request.
+     */
     public static final String FILMS = "GET_ALL_FILMS";
+    /**
+     * static field to be passed into the constructor of a new Request.
+     */
     public static final String MY_RESERVATIONS = "GET_ALL_MY_RESERVATIONS";
+    /**
+     * static field to be passed into the constructor of a new Request.
+     */
     public static final String FILM_DATES = "GET_FILM_DATES";
+    /**
+     * static field to be passed into the constructor of a new Request.
+     */
     public static final String FILM_DATE_TIMES = "GET_FILM_DATE_TIMES";
+    /**
+     * static field to be passed into the constructor of a new Request.
+     */
     public static final String FILM_DATE_TIME_SEATS = "GET_FILM_DATE_TIMESEATS";
+    
     
     private static final long serialVersionUID = 1L;
     

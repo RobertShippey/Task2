@@ -14,7 +14,7 @@ import shared.Request;
 import shared.Response;
 
 /**
- * The clients communication with the 
+ * The clients communication with the server
  * @author Robert
  */
 public class Comms {

@@ -10,10 +10,15 @@ package Client;
  */
 public class Client {
     private static String Server;
+    /**
+     * Get the IP address or hostname of the server, as passed it via args.
+     * @return a String representation of the server's location
+     */
     public static String getServer(){ return Server;}
     /**
      * Entry point into the client.
-     * @param arg 
+     * Pass in the IP address or host name of the server as the first and only arg
+     * @param arg location of the server
      */
     public static void main(String arg[]) {
         if(arg.length == 1){
