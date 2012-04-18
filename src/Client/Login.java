@@ -66,7 +66,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         try{
-        server = new Comms("localhost");
+        server = new Comms();
         } catch (IOException e){
             JOptionPane.showMessageDialog(null, e.getMessage());
             System.exit(0);

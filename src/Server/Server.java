@@ -261,6 +261,7 @@ public class Server {
      */
     public void removeClient(Session c) {
        synchronized(_clients){ this._clients.remove(c); }
+       c.forceQuit();
     }
 
     /**
