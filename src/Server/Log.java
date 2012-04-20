@@ -25,14 +25,13 @@ public class Log {
      */
     public Log() {
         try {
-            logfile = new File("logs/" + getTime() + ".log");
-            if (!logfile.getParentFile().exists()) {
-                logfile.getParentFile().mkdir();
+            logfile = new File("logs" + File.separator + getTime() + ".log");
+            if(!logfile.getParentFile().exists()){
+                logfile.getParentFile().mkdirs();
             }
             log = new FileWriter(logfile);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
-            return;
         }
     }
 
@@ -42,7 +41,7 @@ public class Log {
      */
     private String getTime() {
         now = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
         String time = sdf.format(now.getTime());
         return time;
     }
@@ -55,7 +54,7 @@ public class Log {
      */
     public boolean writeMessage(String msg, boolean stdout) {
         try {
-            String message = getTime() + ":: " + msg + "\n";
+            String message = getTime() + ":: " + msg + Server.endLine;
             if (stdout) {
                 System.out.print(message);
             }

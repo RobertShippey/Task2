@@ -24,6 +24,15 @@ import shared.Film;
  */
 public class Server {
     
+    private static final String filmFile = "data" + File.separator + "films.txt";
+    private static final String reservationFile = "data" + File.separator + "reservations.txt";
+    private static final String userFile = "data" + File.separator + "users.txt";
+    private static final String offersFile = "data" + File.separator + "special_offers.txt";
+    /**
+     * Global access to the end line character (not OS specific) for use in file read/write
+     */
+    public static final String endLine = "\r\n";
+    
     /**
      * A non-blocking timeout constant for use in the server
      */
@@ -32,7 +41,6 @@ public class Server {
      * A blocking timeout for the server.
      */
     public static final int TIMEOUT_BLOCK = 0;
-    //private LinkedList<Showing> _showings;
     private Data data;
     private List<Session> _clients;
     private boolean quit;
@@ -46,10 +54,10 @@ public class Server {
      */
     public static void main(String[] args) {
         Server server = new Server();
-        File films = new File("data/films.txt");
-        File reservations = new File("data/reservations.txt");
-        File users = new File("data/users.txt");
-        File offers = new File("data/special_offers.txt");
+        File films = new File(Server.filmFile);
+        File reservations = new File(Server.reservationFile);
+        File users = new File(Server.userFile);
+        File offers = new File(Server.offersFile);
         server.readFile(films, reservations, users, offers);
        
         ServerSocket s = null;
@@ -130,15 +138,12 @@ public class Server {
         Film[] fl = null;
         String ofrs = null;
         try {
-            if(!u.getParentFile().exists()){
-                u.getParentFile().mkdir();
-            }
             
             if (u.exists()) {
                 FileInputStream uf = new FileInputStream(u);
                 byte[] us = new byte[uf.available()];
                 uf.read(us);
-                ull.addAll(Arrays.asList(new String(us).split("\n")));
+                ull.addAll(Arrays.asList(new String(us).split(Server.endLine)));
                 uf.close();
             } else {
                 u.createNewFile();
@@ -149,7 +154,7 @@ public class Server {
                 byte[] fileBytes = new byte[ff.available()];
                 ff.read(fileBytes);
                 String films = new String(fileBytes);
-                String[] film = films.split("\n");
+                String[] film = films.split(Server.endLine);
                 fl = new Film[film.length];
                 if (!film[0].equals("")) {
                     for (int x = 0; x < film.length; x++) {
@@ -173,7 +178,7 @@ public class Server {
                 byte[] t = new byte[fis.available()];
                 fis.read(t);
                 String text = new String(t);
-                String[] records = text.split("\n");
+                String[] records = text.split(Server.endLine);
                 if(!records[0].equals("")){
                 for (int x = 0; x < records.length; x++) {
                     String[] row = records[x].split(",");
@@ -198,7 +203,7 @@ public class Server {
             log.writeError(ioe.getMessage(), true);
         }
         users = ull;
-        data.offers = ofrs;
+        data.setOffers(ofrs);
     }
 
     /**
@@ -226,7 +231,7 @@ public class Server {
                         + b.getFilm().getTime() 
                         + "," + b.getFilm().getBooked() 
                         + "," + b.getSeats() 
-                        + "," + b.getName() + "\n";
+                        + "," + b.getName() + Server.endLine;
                 fos.write(res.getBytes());
             }
             fos.close();
@@ -236,7 +241,7 @@ public class Server {
                 Iterator<String> uit = users.iterator();
                 while (uit.hasNext()) {
                     String u = uit.next();
-                    String name = u + "\n";
+                    String name = u + Server.endLine;
                     fos.write(name.getBytes());
                 }
             }

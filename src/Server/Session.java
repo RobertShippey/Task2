@@ -114,11 +114,11 @@ public class Session extends Thread {
                     r.setSuccess(true);
 
                 } else if (command.equals(Request.REFRESH_OFFERS)) {
-                    if (data.offers == null) {
+                    if (data.getOffers() == null) {
                         r.setSuccess(false);
                         r.setReason("Offers not found");
                     } else {
-                        r.setResponse(data.offers);
+                        r.setResponse(data.getOffers());
                         r.setSuccess(true);
                     }
                 } else if (command.equals(Request.MY_RESERVATIONS)) {

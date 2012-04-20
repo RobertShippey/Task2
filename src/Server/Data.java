@@ -20,10 +20,7 @@ public class Data {
     private Film[] films;
     private List<Booking> reservations;
     private final UrgentMsgThread urgent;
-    /**
-     * The String containing offers read from the file
-     */
-    public String offers;
+    private String offers;
 
     /**
      * Constructs the instance
@@ -221,7 +218,7 @@ public class Data {
         String r = new String("");
         if (films != null) {
             for (int x = 0; x < films.length; x++) {
-                r += films[x].toString() + "\n";
+                r += films[x].toString() + Server.endLine;
             }
             return r;
         } else {
@@ -278,5 +275,21 @@ public class Data {
         }
         return r.toArray();
         
+    }
+    
+    /**
+     * Sets the offers for use by the clients
+     * @param off the offer string
+     */
+    public void setOffers(String off){
+        this.offers = off;
+    }
+    
+    /**
+     * Get the offers from the data structure
+     * @return the offers string
+     */
+    public String getOffers(){
+        return this.offers;
     }
 }
