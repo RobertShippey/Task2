@@ -41,6 +41,7 @@ public class Server {
      * A blocking timeout for the server.
      */
     public static final int TIMEOUT_BLOCK = 0;
+    
     private Data data;
     private List<Session> _clients;
     private boolean quit;
@@ -126,7 +127,8 @@ public class Server {
     }
 
     /**
-     * Reads the parameter files into the internal data structures
+     * Reads the parameter files into the internal data structures.
+     * Splits on end lines, then by commas to retrieve each 'cell' of information.
      * @param f Films file
      * @param r Reservations file
      * @param u Users file
@@ -273,8 +275,10 @@ public class Server {
      * @param c the Session to remove
      */
     public void removeClient(Session c) {
-       synchronized(_clients){ this._clients.remove(c); }
-       c.forceQuit();
+        synchronized (_clients) {
+            this._clients.remove(c);
+        }
+        c.forceQuit();
     }
 
     /**

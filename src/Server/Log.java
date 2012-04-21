@@ -21,12 +21,32 @@ public class Log {
     private FileWriter log = null;
 
     /**
+     * Constructs a Log instance, sets up the file named by the date or server.log if appending
+     * @param append boolean if true, then data will be written to the end of the file rather than the beginning
+     */
+    public Log(boolean append) {
+        try {
+            if (append) {
+                logfile = new File("logs" + File.separator + "server.log");
+            } else {
+                logfile = new File("logs" + File.separator + getTime() + ".log");
+            }
+            if (!logfile.getParentFile().exists()) {
+                logfile.getParentFile().mkdirs();
+            }
+            log = new FileWriter(logfile, append);
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+    }
+    
+    /**
      * Constructs a Log instance, sets up the file named by the date.
      */
     public Log() {
         try {
             logfile = new File("logs" + File.separator + getTime() + ".log");
-            if(!logfile.getParentFile().exists()){
+            if (!logfile.getParentFile().exists()) {
                 logfile.getParentFile().mkdirs();
             }
             log = new FileWriter(logfile);
@@ -62,7 +82,7 @@ public class Log {
             log.flush();
             return true;
         } catch (IOException e) {
-            System.err.print(getTime() + ":: Could not write message: " + msg);
+            System.err.println(getTime() + ":: Could not write message: " + msg);
             return false;
         }
     }

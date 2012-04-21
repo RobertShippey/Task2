@@ -36,7 +36,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
     private final JTabbedPane tabbedGUI;
 
     /**
-     * Constructs a menu.
+     * Constructs a menu. Adds elements to the tabbed view, adds listeners.
      * @param s the instance that deals with this session on the server
      */
     public Menu(Comms s) {
@@ -305,7 +305,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
     }
 
     /**
-     * Performs the actions for submit/refresh buttons on each tab.
+     * Performs the action based on which action command is passed from a button on each tab. 
      * @param e 
      */
     @Override
@@ -428,7 +428,8 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
     }
 
     /**
-     * Refreshes data on the selected tab after changing tab.
+     * Refreshes data on the selected tab after changing tab. 
+     * Gets the new data and updates the model of the dropdown boxes.
      * @param evt 
      */
     @Override
@@ -466,6 +467,7 @@ public class Menu extends JFrame implements WindowListener, ActionListener, Chan
 
     /**
      * Refreshes the next dropdown box when one has been changed.
+     * Cascades the updating of the models of dropdown boxes.
      * @param ie 
      */
     @Override

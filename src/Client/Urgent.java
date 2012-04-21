@@ -86,7 +86,6 @@ public class Urgent extends JFrame implements Runnable, ActionListener {
             }
         }
         this.dispose();
-        //stuff
     }
 
     /**

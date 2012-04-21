@@ -26,7 +26,8 @@ public class Comms {
     private Booking[] reservations;
 
     /**
-     * Create a new session with the server
+     * Create a new session with the server. Uses the argument passed in as the address to connect to.
+     * Sets the ObjectStream too.
      * @throws IOException can't connect to the server
      */
     public Comms() throws IOException {
@@ -37,7 +38,7 @@ public class Comms {
     }
 
     /**
-     * Log on to the server
+     * Log on to the server and get back the users reservations.
      * @param name the users name
      */
     public void logon(String name) {
@@ -60,7 +61,7 @@ public class Comms {
     }
 
     /**
-     * Log off, disconnect the session with the server.
+     * Sends Log off to the server to finish the session, then close the socket.
      */
     public void logoff() {
         try {
@@ -97,7 +98,7 @@ public class Comms {
     }
 
     /**
-     * Get local or remote reservations that are owned by this user and format them in a comma seperated format.
+     * Get local or remote reservations that are owned by this user and format them in a comma separated format.
      * @param refresh use true to get new data from the server, false to use local cache
      * @return all reservations as Strings.
      */
@@ -140,7 +141,7 @@ public class Comms {
 
     /**
      * Sends a Request object to the server. Ensure that it was constructed with a static string from Request.
-     * This will return null if any exception is catched.
+     * This will return null if any exception is caught.
      * @param r the request
      * @return the Response object created by the server or null.
      */
@@ -157,7 +158,7 @@ public class Comms {
     }
 
     /**
-     * Get all film names from the server
+     * Requests the list of films from the server, removes duplicated, then returns them as Strings.
      * @return Film names as Strings
      */
     public String[] getFilmNames() {
@@ -172,7 +173,7 @@ public class Comms {
     }
 
     /**
-     * Get, from the server, the dates of the films with the name passed in
+     * Requests the list of dates of the films with the name passed in from the server, removes duplicated, then returns them as Strings.
      * @param film the film name
      * @return Strings of dates
      */
@@ -190,7 +191,7 @@ public class Comms {
     }
 
     /**
-     * Get, from the server, the times of the specified film on the specified date.
+     * Requests the list of dates of the films with the name passed in from the server, removes duplicated, then returns them as Strings.
      * @param film the film name
      * @param date the film date
      * @return String of times
@@ -216,8 +217,7 @@ public class Comms {
     }
 
     /**
-     * Gets, from the server, an array of seats. If the film is fully booked it will return 0 to capacity.
-     * If the film is not fully booked it will return 0 to space.
+     * Gets, from the server, an array of available seats. If the film is fully booked it will return 0 to capacity.
      * @param film the film name
      * @param date the film date
      * @param time the film time
@@ -243,7 +243,7 @@ public class Comms {
     }
 
     /**
-     * Removes duplicated (based on the string value of the objects) of any Object array.
+     * Removes duplicated of any Object array.
      * Used for removing duplications in the dropdown boxes.
      * @param objs any object array
      * @return a new Object array with no duplications

@@ -127,7 +127,7 @@ public class Data {
     }
 
     /**
-     * Finds the customer's reservation and removes it from the linked list, also free's space from the film
+     * Finds the customer's reservation and removes it from the linked list, also frees space from the film
      * @param customer the customer's name
      * @param film the film name
      * @param date the film date
@@ -215,7 +215,7 @@ public class Data {
      * @return the films to a csv string
      */
     public synchronized String allFilmsToString() {
-        String r = new String("");
+        String r = "";
         if (films != null) {
             for (int x = 0; x < films.length; x++) {
                 r += films[x].toString() + Server.endLine;

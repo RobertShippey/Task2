@@ -33,7 +33,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
     private Comms server;
 
     /**
-     * Creates a logging in GUI 
+     * Creates elements and adds them to this instance of Login, sets up ActionListeners to this instance.
      */
     public Login() {
 
@@ -60,7 +60,8 @@ public class Login extends JFrame implements ActionListener, KeyListener {
     }
 
     /**
-     * Reads the name from the text box, logs into the server and then constructs a Menu instance.
+     * Makes a new connection to the server (exits if it can't connect) and logs the name with the server's session.
+     * Constructs a new Menu page and shows it, hides and disposes of this page.
      * @param ae 
      */
     @Override

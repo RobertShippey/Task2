@@ -40,7 +40,7 @@ public class UrgentMsgThread extends Thread {
     }
 
     /**
-     * Gets new connections
+     * Thread to gets new connections
      */
     @Override
     public void run() {
