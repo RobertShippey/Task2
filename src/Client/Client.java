@@ -9,7 +9,7 @@ package Client;
  * @author Robert and Nathan
  */
 public class Client {
-    private static String Server;
+    private static String Server = "localhost";
     /**
      * Get the IP address or hostname of the server, as passed it via args.
      * @return a String representation of the server's location
@@ -21,12 +21,12 @@ public class Client {
      * @param arg location of the server
      */
     public static void main(String arg[]) {
-        if(arg.length == 1){
-            Client.Server = arg[0];
+       // if(arg.length == 1){
+          //  Client.Server = arg[0];
             Login frame = new Login();
-        } else {
-            System.err.println("Error. Argument should be IP address/host name of the server");
-        }
+       // } else {
+        //    System.err.println("Error. Argument should be IP address/host name of the server");
+      //  }
             
     }
 }

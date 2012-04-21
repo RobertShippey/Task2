@@ -85,6 +85,9 @@ public class Data {
      * @return Film instance
      */
     public synchronized Film findFilm(String name, String date, String time) {
+        if(films == null){
+            return null;
+        }
             for(int x=0;x<films.length;x++){
                 if (films[x].getName().equals(name) && films[x].getDate().equals(date) 
                         && films[x].getTime().equals(time)) {
@@ -232,6 +235,9 @@ public class Data {
      * @return Film names
      */
     public String[] getFilmNames(){
+        if(films == null){
+            return null;
+        }
         String[] r = new String[films.length];
         for(int x=0; x<r.length;x++){
             r[x] = films[x].getName();
@@ -246,6 +252,9 @@ public class Data {
      */
     public Object[] findFilms(String film) {
         LinkedList<Film> r = new LinkedList<Film>();
+        if(films == null){
+            return null;
+        }
         for(int x=0;x<films.length;x++){
             if(films[x].getName().equals(film)){
                 r.add(films[x]);
@@ -265,6 +274,9 @@ public class Data {
      */
     public Object[] findFilms(String film, String date){
          LinkedList<Film> r = new LinkedList<Film>();
+         if(films == null){
+             return null;
+         }
         for(int x=0;x<films.length;x++){
             if(films[x].getName().equals(film) && films[x].getDate().equals(date)){
                 r.add(films[x]);

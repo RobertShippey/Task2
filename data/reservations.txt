@@ -1,3 +1,0 @@
-Batman,28/3/2012,16:00,1,1,robert
-Batman,28/3/2012,18:00,6,6,robert
-The Hunger Games,10/04/2012,15:30,1,1,dav

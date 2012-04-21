@@ -138,19 +138,19 @@ public class Session extends Thread {
                     r.setSuccess(true);
                     
                 } else if (command.equals(Request.FILM_DATES)){
-                    
+                 
                     Object[] films = data.findFilms(film);
-                    if(films!=null){
-                    String[] dates = new String[films.length];
-                    for(int x=0;x<dates.length;x++){
-                        dates[x] = ((Film)films[x]).getDate();
-                    }
-                    r.setResponseObjects(dates);
-                    r.setSuccess(true);
+                    if (films != null) {
+                        String[] dates = new String[films.length];
+                        for (int x = 0; x < dates.length; x++) {
+                            dates[x] = ((Film) films[x]).getDate();
+                        }
+                        r.setResponseObjects(dates);
+                        r.setSuccess(true);
                     } else {
                         r.setSuccess(false);
                         r.setReason("No dates found for the specified film.");
-                    } 
+                    }
                 } else if (command.equals(Request.FILM_DATE_TIMES)){
                     Object[] films = data.findFilms(film, date);
                     if(films!=null){
@@ -166,20 +166,28 @@ public class Session extends Thread {
                     } 
                 } else if (command.equals(Request.FILM_DATE_TIME_SEATS)) {
                     String[] seatsStrings;
-                    if(data.findFilm(film, date, time).space() == 0){
-                        seatsStrings = new String[data.findFilm(film, date, time).getCapacity()];
-                        for (int x = 0; x < seatsStrings.length; x++) {
-                            seatsStrings[x] = Integer.toString(x + 1);
+                    Film seatsFilm = data.findFilm(film, date, time);
+                    if (seatsFilm != null) {
+                        if (seatsFilm.space() == 0) {
+                            seatsStrings = new String[seatsFilm.getCapacity()];
+                            for (int x = 0; x < seatsStrings.length; x++) {
+                                seatsStrings[x] = Integer.toString(x + 1);
+                            }
+                        } else {
+                            seatsStrings = new String[seatsFilm.space()];
+                            for (int x = 0; x < seatsStrings.length; x++) {
+                                seatsStrings[x] = Integer.toString(x + 1);
+                            }
                         }
-                    } else {
-                        seatsStrings = new String[data.findFilm(film, date, time).space()];
-                        for (int x = 0; x < seatsStrings.length; x++) {
-                            seatsStrings[x] = Integer.toString(x + 1);
-                        }
-                    }
+                    
 
                     r.setResponseObjects(seatsStrings);
                     r.setSuccess(true);
+                    } else {
+                        r.setSuccess(false);
+                        r.setReason("Could not find film");
+                    }
+                    
                 }else if (command.equals(Request.LOG_OFF)) {
                     server.removeClient(this);
                     quit = true;

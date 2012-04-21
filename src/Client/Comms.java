@@ -165,6 +165,10 @@ public class Comms {
         Request r = new Request(Request.FILMS);
         Response response = sendRequest(r);
         Object[] filmObjs = removeDuplicates(response.getResponseObjects());
+        if(filmObjs == null){
+            String[] n = {""};
+            return n;
+        }
         String[] films = new String[filmObjs.length];
         for (int x = 0; x < filmObjs.length; x++) {
             films[x] = (String) filmObjs[x];
@@ -183,6 +187,10 @@ public class Comms {
 
         Response response = sendRequest(req);
         Object[] obj = removeDuplicates(response.getResponseObjects());
+        if(obj == null){
+            String[] n = {""};
+            return n;
+        }
         String[] r = new String[obj.length];
         for (int x = 0; x < obj.length; x++) {
             r[x] = (String) obj[x];

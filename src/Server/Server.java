@@ -148,6 +148,7 @@ public class Server {
                 ull.addAll(Arrays.asList(new String(us).split(Server.endLine)));
                 uf.close();
             } else {
+                u.getParentFile().mkdirs();
                 u.createNewFile();
             }
 
