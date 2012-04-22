@@ -2,13 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package nothing;
+package Default;
 
 /**
- *
+ * Default class.
  * @author Robert
  */
 public class Main {
+    /**
+     * The Default entry point of the project. If no class path is passed then this will run illustrating to the user the correct usage.
+     * @param args no arguments are needed
+     */
     public static void main(String[] args){
         System.err.println("Error!!");
         System.err.println("To run the server use:");
