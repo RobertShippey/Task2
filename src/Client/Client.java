@@ -21,12 +21,12 @@ public class Client {
      * @param arg location of the server
      */
     public static void main(String arg[]) {
-       // if(arg.length == 1){
-          //  Client.Server = arg[0];
+        if(arg.length == 1){
+            Client.Server = arg[0];
             Login frame = new Login();
-       // } else {
-        //    System.err.println("Error. Argument should be IP address/host name of the server");
-      //  }
+        } else {
+            System.err.println("Error. Argument should be IP address/host name of the server");
+        }
             
     }
 }
